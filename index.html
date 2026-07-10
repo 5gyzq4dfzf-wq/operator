@@ -34,7 +34,6 @@
     h1 { font-size: 1.8rem; letter-spacing: -0.025em; margin-bottom: 4px; }
     .subtitle { color: var(--muted); font-size: 0.9rem; }
     
-    /* Stats Grid */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -51,7 +50,6 @@
     .stat-val { font-size: 1.4rem; font-weight: bold; color: var(--brand); }
     .stat-lbl { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; }
 
-    /* Navigation Tabs */
     .tabs {
       display: flex;
       gap: 8px;
@@ -74,7 +72,6 @@
       border-color: transparent;
     }
 
-    /* Content Layout */
     .grid-layout {
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
@@ -86,11 +83,9 @@
       }
     }
 
-    /* Content Panels */
     .panel-content { display: none; }
     .panel-content.active { display: block; }
 
-    /* Checklist */
     .task-card {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -114,7 +109,6 @@
     .task-card.completed { opacity: 0.5; border-color: rgba(16, 185, 129, 0.2); }
     .task-card.completed .task-title { text-decoration: line-through; }
 
-    /* Schedule Timeline */
     .time-block {
       border-left: 2px solid var(--border);
       padding-left: 16px;
@@ -132,14 +126,10 @@
       border-radius: 50%;
       background: var(--border);
     }
-    .time-block.active-time::before {
-      background: var(--accent);
-    }
     .time-val { font-size: 0.8rem; font-weight: bold; color: var(--accent); }
     .time-title { font-weight: 600; font-size: 0.95rem; }
     .time-desc { color: var(--muted); font-size: 0.85rem; }
 
-    /* Form Fields for Report Generator */
     .form-group { margin-bottom: 12px; }
     label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
     input[type="text"], input[type="number"], select, textarea {
@@ -153,7 +143,6 @@
     }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     
-    /* Side Cards */
     .side-card {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -170,7 +159,6 @@
       font-weight: 700;
     }
 
-    /* Buttons */
     .btn {
       width: 100%;
       background: var(--brand);
@@ -184,15 +172,12 @@
       margin-top: 10px;
     }
     .btn:active { opacity: 0.9; }
-
     .btn-secondary {
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text);
     }
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.05); }
 
     #copyAlert, #backupAlert {
       display: none;
@@ -240,7 +225,6 @@
   </div>
 
   <div class="grid-layout">
-    <!-- MAIN COLUMN -->
     <main>
       <!-- CHECKLIST PANEL -->
       <div id="today" class="panel-content active">
@@ -257,7 +241,7 @@
         <div class="time-block">
           <div class="time-val">06:10 - 06:50</div>
           <div class="time-title">Morning Calisthenics Session (Daily Strength)</div>
-          <div class="time-desc">Circuit x4 rounds: Pushups, bodyweight squats, lunges, planks. Strict progressive volume ramp.</div>
+          <div class="time-desc">Circuit x4 rounds: Pushups → Squats → Plank → Lunges → Pull-ups. Strict progressive volume ramp.</div>
         </div>
         <div class="time-block">
           <div class="time-val">07:00 - 07:10</div>
@@ -285,6 +269,11 @@
           <div class="time-desc">Memory Palace practice (10 loci). Encode 10 tough vocabulary cards.</div>
         </div>
         <div class="time-block">
+          <div class="time-val">11:45 - 12:30</div>
+          <div class="time-title">Lunch Block</div>
+          <div class="time-desc">Clean fuel, no active screens if possible. Rest your eyes.</div>
+        </div>
+        <div class="time-block">
           <div class="time-val">12:30 - 13:00</div>
           <div class="time-title">Drawing Lane</div>
           <div class="time-desc">Drawabox Lesson 1: ghosted-lines and ellipses on paper.</div>
@@ -295,14 +284,29 @@
           <div class="time-desc">Non-Sleep Deep Rest. Consolidate math and languages.</div>
         </div>
         <div class="time-block">
+          <div class="time-val">13:30 - 15:00</div>
+          <div class="time-title">Spanish Deep Input</div>
+          <div class="time-desc">Dreaming Spanish or beginner podcast immersion block.</div>
+        </div>
+        <div class="time-block">
+          <div class="time-val">15:00 - 17:30</div>
+          <div class="time-title">Flex / Life / Work Lane</div>
+          <div class="time-desc">Errands, structural work, active rest. Heat lockout window.</div>
+        </div>
+        <div class="time-block">
           <div class="time-val">17:30 - 18:00</div>
           <div class="time-title">Observation Lane</div>
           <div class="time-desc">Kim's Game (30s observation matrix) or environment/crowd baseline tracking.</div>
         </div>
         <div class="time-block">
+          <div class="time-val">18:00 - 20:00</div>
+          <div class="time-title">Dinner &amp; Structural Flex</div>
+          <div class="time-desc">Meal prep, unwind, review notes. Hydrate before combat session.</div>
+        </div>
+        <div class="time-block">
           <div class="time-val">20:00 - 20:40</div>
           <div class="time-title">Nightly Combat Session (Daily Skill)</div>
-          <div class="time-desc">Shadowboxing technical blocks (6 rounds, 3 mins work, 1 min rest). Isolate single mechanical mechanics (Week 1: Stance &amp; Step-Drag).</div>
+          <div class="time-desc">Shadowboxing technical blocks (6 rounds, 3 mins work, 1 min rest). Isolate single mechanics (Week 1: Stance &amp; Step-Drag).</div>
         </div>
       </div>
 
@@ -331,7 +335,7 @@
         </div>
         <div class="form-group">
           <label for="repWorkout">Workout Session details &amp; Numbers</label>
-          <input type="text" id="repWorkout" placeholder="e.g. Calisthenics: 4x15 pushups, squats | Combat: 6 rds Stance drills">
+          <input type="text" id="repWorkout" placeholder="e.g. Calisthenics: 4 rounds | Combat: 6 rds Stance drills">
         </div>
         <div class="form-group">
           <label for="repLanes">Lanes Ticked (Space-separated list or 'All')</label>
@@ -359,7 +363,7 @@
         </div>
         <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
           <h3 style="color:var(--brand); margin-bottom:8px;">Physical Grid Track</h3>
-          <p style="font-size:0.9rem; color:var(--muted);">Monday through Sunday structure: Morning Calisthenics strength block + Nightly Combat shadowboxing technical isolation blocks.</p>
+          <p style="font-size:0.9rem; color:var(--muted);">Monday through Sunday structure: Morning Calisthenics strength block (Push-ups → Squats → Plank → Lunges → Pull-ups) + Nightly Combat shadowboxing technical isolation blocks.</p>
         </div>
         <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
           <h3 style="color:var(--brand); margin-bottom:8px;">Cognitive Primaries</h3>
@@ -372,9 +376,7 @@
       </div>
     </main>
 
-    <!-- SIDEBAR COLUMN -->
     <aside>
-      <!-- DATA GUARD (BACKUP & RESTORE) -->
       <div class="side-card">
         <div class="side-card-title">Data Guard</div>
         <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px; line-height:1.4;">
@@ -385,7 +387,6 @@
         <div id="backupAlert">Code copied! Save it in your personal notes.</div>
       </div>
 
-      <!-- FIXED SYSTEM CARD -->
       <div class="side-card">
         <div class="side-card-title">System Status</div>
         <p style="font-size:0.85rem; line-height:1.6;">
@@ -403,17 +404,21 @@
   
   const tasks = [
     "Wake Protocol (Glass of water, immediate movement, zero scrolling)",
-    "Morning Calisthenics Session (Strength circuit - progress ramp volume)",
+    "Morning Calisthenics Session (Pushups → Squats → Plank → Lunges → Pullups)",
     "CNS Lane (Cold shower 60-90s + Box Breathing 4-4-4-4 x 10 rounds)",
     "Spanish Engine (Anki/AlgoApp 15-20 cards, shadow 3-5x aloud)",
     "Spanish Structure (Language Transfer 2 episodes)",
     "Spanish Ingestion (Dreaming Spanish input block)",
     "Spanish Production (5 sentences written + 5 mins aloud narration)",
     "Math Block (Khan Academy Course Tracker)",
+    "Lunch Block (Clean nutrition, recovery focus)",
     "Memory Lane (10 loci Palace encoding)",
     "Drawing Lane (Drawabox Lesson 1 fundamentals, 25 mins)",
     "NSDR / Siesta (Huberman Yoga Nidra recovery tool, 20 mins)",
+    "Spanish Deep Input (Immersion block)",
+    "Flex / Life / Work Lane (Errands, targeted structural tasks)",
     "Observation Lane (Kim's Game or environment baseline analysis)",
+    "Dinner Block (Nutrition, baseline hydration check)",
     "Nightly Combat Session (Isolated technique block - Stance/Footwork focus)"
   ];
 
