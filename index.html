@@ -193,17 +193,7 @@
     .btn-secondary:hover {
       background: rgba(255, 255, 255, 0.05);
     }
-    .btn-danger {
-      background: #dc2626;
-    }
 
-    .flex-btn-group {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    /* Copy Feedback Alert */
     #copyAlert, #backupAlert {
       display: none;
       background: var(--accent);
@@ -266,8 +256,8 @@
         </div>
         <div class="time-block">
           <div class="time-val">06:10 - 06:50</div>
-          <div class="time-title">Park Session A (Strength) / B (Skill)</div>
-          <div class="time-desc">Mon/Wed/Fri: Calisthenics (+10% ramp). Tue/Thu/Sat: Boxing drills. Sun: Walk.</div>
+          <div class="time-title">Morning Calisthenics Session (Daily Strength)</div>
+          <div class="time-desc">Circuit x4 rounds: Pushups, bodyweight squats, lunges, planks. Strict progressive volume ramp.</div>
         </div>
         <div class="time-block">
           <div class="time-val">07:00 - 07:10</div>
@@ -311,8 +301,8 @@
         </div>
         <div class="time-block">
           <div class="time-val">20:00 - 20:40</div>
-          <div class="time-title">Park Session B / Skill Work</div>
-          <div class="time-desc">Shadowboxing (6 rounds, 3 mins work, 1 min rest). Precision technique.</div>
+          <div class="time-title">Nightly Combat Session (Daily Skill)</div>
+          <div class="time-desc">Shadowboxing technical blocks (6 rounds, 3 mins work, 1 min rest). Isolate single mechanical mechanics (Week 1: Stance &amp; Step-Drag).</div>
         </div>
       </div>
 
@@ -341,7 +331,7 @@
         </div>
         <div class="form-group">
           <label for="repWorkout">Workout Session details &amp; Numbers</label>
-          <input type="text" id="repWorkout" placeholder="e.g. Park A: 4 rounds of 15 pushups, 20 squats, 10 pullups">
+          <input type="text" id="repWorkout" placeholder="e.g. Calisthenics: 4x15 pushups, squats | Combat: 6 rds Stance drills">
         </div>
         <div class="form-group">
           <label for="repLanes">Lanes Ticked (Space-separated list or 'All')</label>
@@ -366,6 +356,10 @@
         <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
           <h3 style="color:var(--accent); margin-bottom:8px;">Vegas Heat Rule</h3>
           <p style="font-size:0.9rem; color:var(--muted);">Outdoor training strictly before 8:00am or after 8:00pm when temperatures exceed 100 degrees Fahrenheit. Stay hydrated.</p>
+        </div>
+        <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
+          <h3 style="color:var(--brand); margin-bottom:8px;">Physical Grid Track</h3>
+          <p style="font-size:0.9rem; color:var(--muted);">Monday through Sunday structure: Morning Calisthenics strength block + Nightly Combat shadowboxing technical isolation blocks.</p>
         </div>
         <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
           <h3 style="color:var(--brand); margin-bottom:8px;">Cognitive Primaries</h3>
@@ -409,7 +403,7 @@
   
   const tasks = [
     "Wake Protocol (Glass of water, immediate movement, zero scrolling)",
-    "Park Session A (Strength) or B (Skill)",
+    "Morning Calisthenics Session (Strength circuit - progress ramp volume)",
     "CNS Lane (Cold shower 60-90s + Box Breathing 4-4-4-4 x 10 rounds)",
     "Spanish Engine (Anki/AlgoApp 15-20 cards, shadow 3-5x aloud)",
     "Spanish Structure (Language Transfer 2 episodes)",
@@ -419,7 +413,8 @@
     "Memory Lane (10 loci Palace encoding)",
     "Drawing Lane (Drawabox Lesson 1 fundamentals, 25 mins)",
     "NSDR / Siesta (Huberman Yoga Nidra recovery tool, 20 mins)",
-    "Observation Lane (Kim's Game or environment baseline analysis)"
+    "Observation Lane (Kim's Game or environment baseline analysis)",
+    "Nightly Combat Session (Isolated technique block - Stance/Footwork focus)"
   ];
 
   let appState = {
@@ -445,7 +440,6 @@
       if (val < 1) val = 1;
       if (val > 175) val = 175;
       appState.day = val;
-      // Maintain checked tasks when changing day inputs (safest operational state)
       saveState();
       updateHeader();
     });
@@ -461,12 +455,10 @@
     document.getElementById('dayInput').value = day;
     document.getElementById('weekVal').textContent = week;
     
-    // Determine Focus Phase
     const isSpanishPrimary = week <= 13;
     document.getElementById('phaseVal').textContent = isSpanishPrimary ? "Spanish Prim." : "Math Prim.";
     document.getElementById('phaseVal').style.color = isSpanishPrimary ? "#6366f1" : "#10b981";
 
-    // Deload validation
     const isDeload = week % 4 === 0;
     document.getElementById('deloadBanner').style.display = isDeload ? "block" : "none";
   }
@@ -536,17 +528,13 @@ Energy: ${energy}`;
     });
   }
 
-  /* DATA GUARD: EXPORT FUNCTION */
   function exportData() {
     const rawData = localStorage.getItem(STORAGE_KEY);
     if (!rawData) {
       alert("No active data found. Check off some tasks to generate state history first.");
       return;
     }
-    
-    // Base64 encode the JSON to make it a clean, un-editable single string of characters
     const encodedData = btoa(unescape(encodeURIComponent(rawData)));
-    
     navigator.clipboard.writeText(encodedData).then(() => {
       const alertBox = document.getElementById('backupAlert');
       alertBox.textContent = "Backup code copied!";
@@ -557,16 +545,12 @@ Energy: ${energy}`;
     });
   }
 
-  /* DATA GUARD: IMPORT FUNCTION */
   function importData() {
     const inputCode = prompt("Paste your secure Backup Code here:");
     if (!inputCode) return;
-    
     try {
-      // Decode base64 back into raw JSON string
       const decodedJSON = decodeURIComponent(escape(atob(inputCode.trim())));
       const parsedState = JSON.parse(decodedJSON);
-      
       if (parsedState && typeof parsedState === "object") {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(parsedState));
         alert("Restored successfully! Restarting dashboard...");
