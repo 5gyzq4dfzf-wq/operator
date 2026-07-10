@@ -3,84 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Operator Control Center</title>
+  <title>Operator Control Center // v2.0</title>
   <style>
     :root {
-      --bg: #0b0f19;
-      --panel: #111827;
-      --border: #1f2937;
-      --text: #f3f4f6;
-      --muted: #9ca3af;
-      --accent: #10b981; /* Neon green */
-      --brand: #6366f1;  /* Indigo */
-      --warn: #f59e0b;
+      --bg: #05070f;       /* Deep pitch black for ultimate contrast */
+      --panel: #0d1321;    /* Solid navy-black panel background */
+      --border: #2d3748;   /* Thicker, bolder borders */
+      --text: #ffffff;     /* Stark white text for maximum legibility */
+      --muted: #a0aec0;    /* High-contrast cool gray */
+      --accent: #00ffaa;   /* Radioactive neon green */
+      --brand: #818cf8;    /* Hyper-bright vivid indigo */
+      --warn: #ff9f00;     /* Intense warning amber */
+      --danger: #ff4a4a;   /* Tactical red */
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       line-height: 1.5;
       padding: 16px;
+      -webkit-font-smoothing: antialiased;
     }
-    .container { max-width: 800px; margin: 0 auto; }
+    .container { max-width: 850px; margin: 0 auto; }
+    
     header {
-      background: linear-gradient(135deg, #1e1b4b, #0f172a);
-      border: 1px solid var(--border);
+      background: linear-gradient(135deg, #0f1123, #070913);
+      border: 2px solid var(--border);
       border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     }
-    h1 { font-size: 1.8rem; letter-spacing: -0.025em; margin-bottom: 4px; }
-    .subtitle { color: var(--muted); font-size: 0.9rem; }
+    h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 6px; text-transform: uppercase; }
+    .subtitle { color: var(--accent); font-weight: 800; font-size: 0.85rem; letter-spacing: 0.15em; }
     
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 16px;
+      gap: 14px;
+      margin-top: 20px;
     }
     .stat-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      border: 2px solid var(--border);
       border-radius: 12px;
-      padding: 12px;
+      padding: 14px;
       text-align: center;
     }
-    .stat-val { font-size: 1.4rem; font-weight: bold; color: var(--brand); }
-    .stat-lbl { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; }
+    .stat-val { font-size: 1.6rem; font-weight: 900; color: var(--brand); }
+    .stat-lbl { font-size: 0.8rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
 
     .tabs {
       display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
+      gap: 10px;
+      margin-bottom: 20px;
       overflow-x: auto;
+      padding-bottom: 4px;
     }
     .tab-btn {
       background: var(--panel);
-      border: 1px solid var(--border);
+      border: 2px solid var(--border);
       color: var(--muted);
-      padding: 8px 16px;
-      border-radius: 20px;
+      padding: 10px 20px;
+      border-radius: 24px;
       cursor: pointer;
       white-space: nowrap;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      transition: all 0.15s ease;
     }
+    .tab-btn:hover { border-color: var(--brand); color: #fff; }
     .tab-btn.active {
       background: var(--brand);
       color: #fff;
       border-color: transparent;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
     }
 
     .grid-layout {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 16px;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 20px;
     }
     @media (max-width: 768px) {
-      .grid-layout {
-        grid-template-columns: 1fr;
-      }
+      .grid-layout { grid-template-columns: 1fr; }
     }
 
     .panel-content { display: none; }
@@ -88,75 +97,89 @@
 
     .task-card {
       background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 10px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 12px;
       display: flex;
       align-items: flex-start;
-      gap: 12px;
+      gap: 14px;
+      transition: border-color 0.2s ease;
     }
+    .task-card:hover { border-color: #3f4e66; }
     .task-checkbox {
-      width: 20px;
-      height: 20px;
-      margin-top: 2px;
+      width: 24px;
+      height: 24px;
+      margin-top: 1px;
       accent-color: var(--accent);
       cursor: pointer;
     }
     .task-info { flex: 1; }
-    .task-title { font-weight: 600; font-size: 1rem; }
-    .task-desc { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
-    .task-card.completed { opacity: 0.5; border-color: rgba(16, 185, 129, 0.2); }
-    .task-card.completed .task-title { text-decoration: line-through; }
+    .task-title { font-weight: 800; font-size: 1.1rem; color: #fff; }
+    .task-desc { color: var(--muted); font-size: 0.9rem; margin-top: 4px; font-weight: 500; }
+    .task-card.completed { opacity: 0.4; border-color: rgba(16, 185, 129, 0.15); background: rgba(5,7,15,0.4); }
+    .task-card.completed .task-title { text-decoration: line-through; color: var(--muted); }
 
     .time-block {
-      border-left: 2px solid var(--border);
-      padding-left: 16px;
-      margin-left: 8px;
+      border-left: 3px solid var(--border);
+      padding-left: 18px;
+      margin-left: 10px;
       position: relative;
-      padding-bottom: 20px;
+      padding-bottom: 24px;
     }
     .time-block::before {
       content: '';
       position: absolute;
-      left: -6px;
+      left: -7px;
       top: 6px;
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background: var(--border);
     }
-    .time-val { font-size: 0.8rem; font-weight: bold; color: var(--accent); }
-    .time-title { font-weight: 600; font-size: 0.95rem; }
-    .time-desc { color: var(--muted); font-size: 0.85rem; }
+    .time-val { font-size: 0.85rem; font-weight: 900; color: var(--accent); letter-spacing: 0.05em; }
+    .time-title { font-weight: 800; font-size: 1.05rem; margin-top: 2px; }
+    .time-desc { color: var(--muted); font-size: 0.9rem; margin-top: 2px; font-weight: 500; }
 
-    .form-group { margin-bottom: 12px; }
-    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+    .form-section-title {
+      font-size: 1rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--brand);
+      margin: 18px 0 10px 0;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 4px;
+    }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 0.9rem; font-weight: 800; color: #fff; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.02em; }
     input[type="text"], input[type="number"], select, textarea {
       width: 100%;
-      background: #1f2937;
-      border: 1px solid var(--border);
+      background: #161f30;
+      border: 2px solid var(--border);
       color: #fff;
-      padding: 10px;
+      padding: 12px;
       border-radius: 8px;
-      font-size: 0.95rem;
+      font-size: 1rem;
+      font-weight: 700;
     }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    input:focus, select:focus, textarea:focus { border-color: var(--brand); outline: none; background: #1a2438; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     
     .side-card {
       background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
     }
     .side-card-title {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-      margin-bottom: 12px;
-      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 14px;
+      font-weight: 900;
     }
 
     .btn {
@@ -164,31 +187,62 @@
       background: var(--brand);
       color: #fff;
       border: none;
-      padding: 12px;
+      padding: 14px;
       border-radius: 8px;
-      font-weight: bold;
+      font-weight: 900;
       cursor: pointer;
       font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       margin-top: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     }
-    .btn:active { opacity: 0.9; }
+    .btn:active { transform: translateY(1px); box-shadow: none; }
     .btn-secondary {
       background: transparent;
-      border: 1px solid var(--border);
+      border: 2px solid var(--border);
       color: var(--text);
     }
-    .btn-secondary:hover { background: rgba(255, 255, 255, 0.05); }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.04); border-color: var(--muted); }
+
+    /* Loci Codex Accordion */
+    .codex-container {
+      background: #090e1a;
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .codex-summary {
+      font-weight: 900;
+      color: var(--warn);
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+      outline: none;
+      user-select: none;
+    }
+    .codex-content {
+      font-size: 0.85rem;
+      margin-top: 10px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .codex-content strong { color: #fff; }
+    .codex-rule { margin-bottom: 8px; padding-left: 8px; border-left: 2px solid var(--warn); }
 
     #copyAlert, #backupAlert {
       display: none;
       background: var(--accent);
       color: #0b0f19;
       text-align: center;
-      padding: 10px;
+      padding: 12px;
       border-radius: 8px;
-      font-weight: bold;
-      margin-top: 10px;
-      font-size: 0.9rem;
+      font-weight: 900;
+      margin-top: 12px;
+      font-size: 0.95rem;
+      text-transform: uppercase;
     }
   </style>
 </head>
@@ -201,7 +255,7 @@
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-lbl">Target Day</div>
-        <input type="number" id="dayInput" min="1" max="175" value="1" style="width:60px; text-align:center; font-weight:bold; background:transparent; border:none; color:var(--brand); font-size:1.4rem; padding:0;">
+        <input type="number" id="dayInput" min="1" max="175" value="1" style="width:100%; text-align:center; font-weight:900; background:transparent; border:none; color:var(--brand); font-size:1.6rem; padding:0; outline:none;">
       </div>
       <div class="stat-card">
         <div class="stat-lbl">Current Week</div>
@@ -209,10 +263,10 @@
       </div>
       <div class="stat-card">
         <div class="stat-lbl">Phase</div>
-        <div class="stat-val" id="phaseVal" style="font-size:0.95rem; margin-top:6px;">Spanish Prim.</div>
+        <div class="stat-val" id="phaseVal" style="font-size:1rem; margin-top:6px; font-weight:900;">Spanish Prim.</div>
       </div>
     </div>
-    <div id="deloadBanner" style="display:none; text-align:center; margin-top:12px; color:var(--warn); font-size:0.85rem; font-weight:bold; letter-spacing:0.05em;">
+    <div id="deloadBanner" style="display:none; text-align:center; margin-top:14px; color:var(--warn); font-size:0.9rem; font-weight:900; letter-spacing:0.05em; border: 2px dashed var(--warn); padding: 6px; border-radius: 8px;">
       *** DELOAD WEEK ACTIVE (HALVE ATHLETIC VOLUME) ***
     </div>
   </header>
@@ -241,85 +295,87 @@
         <div class="time-block">
           <div class="time-val">06:10 - 06:50</div>
           <div class="time-title">Morning Calisthenics Session (Daily Strength)</div>
-          <div class="time-desc">Circuit x4 rounds: Pushups → Squats → Plank → Lunges → Pull-ups. Strict progressive volume ramp.</div>
+          <div class="time-desc">Circuit x4 rounds: Pushups → Squats → Plank → Lunges → Pull-ups. Strict volume baseline logging.</div>
         </div>
         <div class="time-block">
           <div class="time-val">07:00 - 07:10</div>
           <div class="time-title">CNS Lane</div>
-          <div class="time-desc">Cold shower (60-90s) + 10 rounds box breathing (4-4-4-4).</div>
+          <div class="time-desc">Vegas Heat Alternative: Deep ice-water face dunks (10-15s x3) + Box breathing (4-4-4-4) x10 rounds.</div>
         </div>
         <div class="time-block">
           <div class="time-val">07:10 - 07:45</div>
-          <div class="time-title">Breakfast</div>
-          <div class="time-desc">Protein forward (eggs, oats, beans, milk).</div>
+          <div class="time-title">Breakfast Block</div>
+          <div class="time-desc">Fuel injection. Target complex carbs, clean fats, and macro proteins. Log details or constraints.</div>
         </div>
         <div class="time-block">
           <div class="time-val">08:00 - 09:40</div>
           <div class="time-title">Spanish Engine &amp; Study</div>
-          <div class="time-desc">Anki/AlgoApp (shadow 3-5x aloud), Language Transfer, Dreaming Spanish input.</div>
+          <div class="time-desc">Anki/AlgoApp (shadow aloud), Language Transfer logic processing, Dreaming Spanish immersion.</div>
         </div>
         <div class="time-block">
           <div class="time-val">09:55 - 11:25</div>
-          <div class="time-title">Math Block (Khan Academy)</div>
-          <div class="time-desc">Arithmetic Placement challenge Day 1. Transition into targeted focus areas.</div>
+          <div class="time-title">Math Block (Khan Academy Velocity Sprint)</div>
+          <div class="time-desc">Rapid but diligent full Arithmetic course sweep. Run fast through known skills; anchor on leaks.</div>
         </div>
         <div class="time-block">
           <div class="time-val">11:25 - 11:45</div>
-          <div class="time-title">Memory Lane</div>
-          <div class="time-desc">Memory Palace practice (10 loci). Encode 10 tough vocabulary cards.</div>
+          <div class="time-title">Memory Lane (Method of Loci)</div>
+          <div class="time-desc">Map core concepts/sticky words to distinct household loci using absurd, interactive imagery.</div>
         </div>
         <div class="time-block">
           <div class="time-val">11:45 - 12:30</div>
           <div class="time-title">Lunch Block</div>
-          <div class="time-desc">Clean fuel, no active screens if possible. Rest your eyes.</div>
+          <div class="time-desc">System idling. Absolute recovery. Screen-free window. Adaptive/budget flex field.</div>
         </div>
         <div class="time-block">
           <div class="time-val">12:30 - 13:00</div>
           <div class="time-title">Drawing Lane</div>
-          <div class="time-desc">Drawabox Lesson 1: ghosted-lines and ellipses on paper.</div>
+          <div class="time-desc">Drawabox Lesson 1: Mechanical accuracy on paper (lines/ellipses).</div>
         </div>
         <div class="time-block">
           <div class="time-val">13:00 - 13:30</div>
           <div class="time-title">NSDR / Siesta</div>
-          <div class="time-desc">Non-Sleep Deep Rest. Consolidate math and languages.</div>
+          <div class="time-desc">Non-Sleep Deep Rest. Neurological consolidation of morning information.</div>
         </div>
         <div class="time-block">
           <div class="time-val">13:30 - 15:00</div>
           <div class="time-title">Spanish Deep Input</div>
-          <div class="time-desc">Dreaming Spanish or beginner podcast immersion block.</div>
+          <div class="time-desc">Pure beginner-to-intermediate level structural immersion.</div>
         </div>
         <div class="time-block">
           <div class="time-val">15:00 - 17:30</div>
           <div class="time-title">Flex / Life / Work Lane</div>
-          <div class="time-desc">Errands, structural work, active rest. Heat lockout window.</div>
+          <div class="time-desc">Errands, real-world structural tasks. Desert environment heat lockout window.</div>
         </div>
         <div class="time-block">
           <div class="time-val">17:30 - 18:00</div>
           <div class="time-title">Observation Lane</div>
-          <div class="time-desc">Kim's Game (30s observation matrix) or environment/crowd baseline tracking.</div>
+          <div class="time-desc">Kim's Game matrix analysis or environmental baseline scanning.</div>
         </div>
         <div class="time-block">
           <div class="time-val">18:00 - 20:00</div>
           <div class="time-title">Dinner &amp; Structural Flex</div>
-          <div class="time-desc">Meal prep, unwind, review notes. Hydrate before combat session.</div>
+          <div class="time-desc">Nutrition replenishment, processing, baseline checklist validation.</div>
         </div>
         <div class="time-block">
           <div class="time-val">20:00 - 20:40</div>
-          <div class="time-title">Nightly Combat Session (Daily Skill)</div>
-          <div class="time-desc">Shadowboxing technical blocks (6 rounds, 3 mins work, 1 min rest). Isolate single mechanics (Week 1: Stance &amp; Step-Drag).</div>
+          <div class="time-title">Nightly Combat Session (Technical Isolation)</div>
+          <div class="time-desc">6 rounds technical shadowboxing (3m work, 1m rest). Strict focus mechanics (Stance &amp; Step-Drag).</div>
         </div>
       </div>
 
       <!-- GEMINI REPORTER PANEL -->
       <div id="reporter" class="panel-content">
+        
+        <div class="form-section-title">1. Language Operations</div>
         <div class="form-group">
-          <label for="repAnki">Anki Cards Completed</label>
-          <input type="number" id="repAnki" placeholder="e.g. 20">
+          <label for="repAnki">Anki / Vocab Cards Completed</label>
+          <input type="number" id="repAnki" placeholder="e.g. 15">
         </div>
         <div class="row">
           <div class="form-group">
             <label for="repSInput">Spanish Input (Mins)</label>
-            <input type="number" id="repSInput" placeholder="e.g. 45">
+            <input type="number" id="repSInput" placeholder="e.g. 42">
           </div>
           <div class="form-group">
             <label for="repSOutput">Spanish Output Done?</label>
@@ -329,13 +385,39 @@
             </select>
           </div>
         </div>
+
+        <div class="form-section-title">2. Quantitative Velocity Sprint</div>
         <div class="form-group">
-          <label for="repMath">Math Minutes + Topic Covered</label>
-          <input type="text" id="repMath" placeholder="e.g. 90 mins - Arithmetic Course Challenge">
+          <label for="repMathTime">Math Practice Duration &amp; Units</label>
+          <input type="text" id="repMathTime" placeholder="e.g. 35 mins - Arithmetic Course Challenge">
         </div>
+        <div class="row">
+          <div class="form-group">
+            <label for="repMathMastery">Current Course Mastery (%)</label>
+            <input type="number" id="repMathMastery" min="0" max="100" placeholder="e.g. 18">
+          </div>
+          <div class="form-group">
+            <label for="repMathVelocity">Skills Mastered Today</label>
+            <input type="number" id="repMathVelocity" placeholder="e.g. 6">
+          </div>
+        </div>
+
+        <div class="form-section-title">3. Adaptive Nutrition Tracking</div>
+        <div class="row">
+          <div class="form-group">
+            <label for="repBreakfast">Breakfast Log</label>
+            <input type="text" id="repBreakfast" placeholder="e.g. Eggs, oats, avocado / Skipped">
+          </div>
+          <div class="form-group">
+            <label for="repLunch">Lunch Log</label>
+            <input type="text" id="repLunch" placeholder="e.g. Budget snack, water / Skipped">
+          </div>
+        </div>
+
+        <div class="form-section-title">4. Physical Engine &amp; Vitals</div>
         <div class="form-group">
-          <label for="repWorkout">Workout Session details &amp; Numbers</label>
-          <input type="text" id="repWorkout" placeholder="e.g. Calisthenics: 4 rounds | Combat: 6 rds Stance drills">
+          <label for="repWorkout">Workout Details &amp; Raw Numbers</label>
+          <textarea id="repWorkout" rows="3" placeholder="Pushups: 30,14,13,12&#10;Squats: 25,15,12,10&#10;Combat: 6 rds technical drills"></textarea>
         </div>
         <div class="form-group">
           <label for="repLanes">Lanes Ticked (Space-separated list or 'All')</label>
@@ -344,34 +426,54 @@
         <div class="row">
           <div class="form-group">
             <label for="repSleep">Sleep Hours</label>
-            <input type="number" id="repSleep" step="0.1" placeholder="e.g. 8">
+            <input type="number" id="repSleep" step="0.1" placeholder="e.g. 6.5">
           </div>
           <div class="form-group">
             <label for="repEnergy">Energy Level (1-10)</label>
-            <input type="number" id="repEnergy" min="1" max="10" placeholder="e.g. 8">
+            <input type="number" id="repEnergy" min="1" max="10" placeholder="e.g. 7">
           </div>
         </div>
+        
         <button class="btn" onclick="generateAndCopyReport()">Generate &amp; Copy Report</button>
-        <div id="copyAlert">Report copied to clipboard! Paste it directly to Gemini.</div>
+        <div id="copyAlert">Report compiled and copied to clipboard! Paste directly to Gemini.</div>
       </div>
 
       <!-- RULES & PROTOCOLS PANEL -->
       <div id="rules" class="panel-content">
-        <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
-          <h3 style="color:var(--accent); margin-bottom:8px;">Vegas Heat Rule</h3>
-          <p style="font-size:0.9rem; color:var(--muted);">Outdoor training strictly before 8:00am or after 8:00pm when temperatures exceed 100 degrees Fahrenheit. Stay hydrated.</p>
+        <!-- Built-in Loci Codex Dropdown Reference Guide -->
+        <details class="codex-container" open style="margin-bottom: 16px;">
+          <summary class="codex-summary">📖 METHOD OF LOCI SYSTEM CODEX</summary>
+          <div class="codex-content">
+            <div class="codex-rule">
+              <strong>1. The Pronunciation:</strong> Singular is <strong>Locus</strong> (<em>"LOW-kus"</em> = one place). Plural is <strong>Loci</strong> (<em>"LOW-sy"</em> = multiple places). It means "places" in Latin.
+            </div>
+            <div class="codex-rule">
+              <strong>2. Rule of Absurdity:</strong> If it is normal, the brain deletes it. Images injected into a locus must be highly stylized, violent, hilarious, or disgusting. Engage physical senses (textures, smells, weight).
+            </div>
+            <div class="codex-rule">
+              <strong>3. Phrase Extraction Rule:</strong> For complex, long phrases (>10 words), do not memorize every word. Pick <em>one</em> core structural word to build the movie around; let your natural grammar fill the rest upon execution.
+            </div>
+            <div class="codex-rule">
+              <strong>4. Palace Clear-Out:</strong> The palace is a <strong>temporary loading dock</strong>. Once a word bridges into long-term memory via review apps, the mental movie naturally dissolves, freeing the location for fresh data. Rotate environments if overlap occurs.
+            </div>
+          </div>
+        </details>
+
+        <div style="background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
+          <h3 style="color:var(--accent); margin-bottom:8px; font-weight:900;">Vegas Heat Rule</h3>
+          <p style="font-size:0.95rem; color:var(--muted); font-weight:600;">Outdoor training strictly before 8:00am or after 8:00pm when temperatures exceed 100°F. If CNS cold shock is unavailable due to ground-baked tap water, deploy ice-water face basin submersions.</p>
         </div>
-        <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
-          <h3 style="color:var(--brand); margin-bottom:8px;">Physical Grid Track</h3>
-          <p style="font-size:0.9rem; color:var(--muted);">Monday through Sunday structure: Morning Calisthenics strength block (Push-ups → Squats → Plank → Lunges → Pull-ups) + Nightly Combat shadowboxing technical isolation blocks.</p>
+        <div style="background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
+          <h3 style="color:var(--brand); margin-bottom:8px; font-weight:900;">Physical Grid Track</h3>
+          <p style="font-size:0.95rem; color:var(--muted); font-weight:600;">Morning Calisthenics strength block (Pushups → Squats → Plank → Lunges → Pull-ups) + Nightly Combat technical isolation blocks are mandatory daily requirements.</p>
         </div>
-        <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
-          <h3 style="color:var(--brand); margin-bottom:8px;">Cognitive Primaries</h3>
-          <p style="font-size:0.9rem; color:var(--muted);">Weeks 1 to 13: Spanish focus (Math maintenance 60-90m).<br>Weeks 14 to 25: Math focus (Spanish maintenance 60m).</p>
+        <div style="background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
+          <h3 style="color:var(--brand); margin-bottom:8px; font-weight:900;">Cognitive Primaries</h3>
+          <p style="font-size:0.95rem; color:var(--muted); font-weight:600;">Weeks 1 to 13: Spanish focus (Math maintenance/sprint 60-90m).<br>Weeks 14 to 25: Math focus (Spanish maintenance 60m).</p>
         </div>
-        <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px;">
-          <h3 style="color:var(--warn); margin-bottom:8px;">Error Correction Rule</h3>
-          <p style="font-size:0.9rem; color:var(--muted);">Missed a block? Reset instantly. Do not burn mental energy on guilt. Compress subsequent targets to absolute high-yield minimum viable tasks and move forward.</p>
+        <div style="background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:16px;">
+          <h3 style="color:var(--warn); margin-bottom:8px; font-weight:900;">Error Correction Rule</h3>
+          <p style="font-size:0.95rem; color:var(--muted); font-weight:600;">Missed a block? Reset instantly. Do not burn mental energy on guilt. Compress subsequent targets to absolute high-yield minimum viable tasks and move forward immediately.</p>
         </div>
       </div>
     </main>
@@ -379,20 +481,20 @@
     <aside>
       <div class="side-card">
         <div class="side-card-title">Data Guard</div>
-        <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px; line-height:1.4;">
+        <p style="font-size:0.85rem; color:var(--muted); margin-bottom:12px; line-height:1.4; font-weight:600;">
           Prevent browser clear-outs. Export to save a secure backup string. Import to restore your data anytime.
         </p>
-        <button class="btn btn-secondary" onclick="exportData()" style="padding:8px 0; font-size:0.85rem;">Export Progress Code</button>
-        <button class="btn btn-secondary" onclick="importData()" style="padding:8px 0; font-size:0.85rem; margin-top:8px;">Import Backup Code</button>
+        <button class="btn btn-secondary" onclick="exportData()" style="padding:10px 0; font-size:0.85rem; font-weight:800;">Export Progress Code</button>
+        <button class="btn btn-secondary" onclick="importData()" style="padding:10px 0; font-size:0.85rem; font-weight:800; margin-top:8px;">Import Backup Code</button>
         <div id="backupAlert">Code copied! Save it in your personal notes.</div>
       </div>
 
       <div class="side-card">
         <div class="side-card-title">System Status</div>
-        <p style="font-size:0.85rem; line-height:1.6;">
-          • Budget: <span style="color:var(--accent); font-weight:bold;">$0</span><br>
-          • Set-up: <span style="color:var(--brand); font-weight:bold;">Home + Park</span><br>
-          • Focus Unit: <span style="color:var(--warn); font-weight:bold;">Minute Blocks</span>
+        <p style="font-size:0.9rem; line-height:1.7; font-weight:700;">
+          • Budget: <span style="color:var(--danger); font-weight:900;">Adaptive Flex</span><br>
+          • Set-up: <span style="color:var(--brand); font-weight:900;">Home + Park</span><br>
+          • Math Focus: <span style="color:var(--warn); font-weight:900;">Velocity Sprint</span>
         </p>
       </div>
     </aside>
@@ -400,26 +502,26 @@
 </div>
 
 <script>
-  const STORAGE_KEY = "operator_run_state";
+  const STORAGE_KEY = "operator_run_state_v2";
   
   const tasks = [
-    "Wake Protocol (Glass of water, immediate movement, zero scrolling)",
-    "Morning Calisthenics Session (Pushups → Squats → Plank → Lunges → Pullups)",
-    "CNS Lane (Cold shower 60-90s + Box Breathing 4-4-4-4 x 10 rounds)",
-    "Spanish Engine (Anki/AlgoApp 15-20 cards, shadow 3-5x aloud)",
-    "Spanish Structure (Language Transfer 2 episodes)",
+    "Wake Protocol (Immediate glass of water, no screen, immediate deployment to park)",
+    "Morning Calisthenics Session (Pushups → Squats → Plank → Lunges → Pullups x4 rounds)",
+    "CNS Lane (Ice-basin face immersion 10-15s x3 + Box Breathing x10 rounds)",
+    "Breakfast Block (Nutrition logging, protein/fat calibration)",
+    "Spanish Engine (Anki/AlgoApp card clearance, high review focus)",
+    "Spanish Structure (Language Transfer logical execution)",
     "Spanish Ingestion (Dreaming Spanish input block)",
-    "Spanish Production (5 sentences written + 5 mins aloud narration)",
-    "Math Block (Khan Academy Course Tracker)",
-    "Lunch Block (Clean nutrition, recovery focus)",
-    "Memory Lane (10 loci Palace encoding)",
-    "Drawing Lane (Drawabox Lesson 1 fundamentals, 25 mins)",
-    "NSDR / Siesta (Huberman Yoga Nidra recovery tool, 20 mins)",
-    "Spanish Deep Input (Immersion block)",
-    "Flex / Life / Work Lane (Errands, targeted structural tasks)",
-    "Observation Lane (Kim's Game or environment baseline analysis)",
-    "Dinner Block (Nutrition, baseline hydration check)",
-    "Nightly Combat Session (Isolated technique block - Stance/Footwork focus)"
+    "Math Block (Khan Academy Arithmetic Velocity Sprint)",
+    "Memory Lane (10 loci Palace encoding using Method of Loci protocols)",
+    "Lunch Block (Adaptive nutrition tracking, recovery focus)",
+    "Drawing Lane (Drawabox Lesson 1 fundamental geometry drills, 25 mins)",
+    "NSDR / Siesta (Neurological memory consolidation tool, 20 mins)",
+    "Spanish Deep Input (Pure immersion audio/video processing block)",
+    "Flex / Life / Work Lane (Structural errands, heat management lockout)",
+    "Observation Lane (Kim's Game matrix analysis or crowd metrics)",
+    "Dinner Block (Refueling, operational validation check)",
+    "Nightly Combat Session (Shadowboxing technical isolation - Stance/Footwork focus)"
   ];
 
   let appState = {
@@ -462,7 +564,7 @@
     
     const isSpanishPrimary = week <= 13;
     document.getElementById('phaseVal').textContent = isSpanishPrimary ? "Spanish Prim." : "Math Prim.";
-    document.getElementById('phaseVal').style.color = isSpanishPrimary ? "#6366f1" : "#10b981";
+    document.getElementById('phaseVal').style.color = isSpanishPrimary ? "#818cf8" : "#00ffaa";
 
     const isDeload = week % 4 === 0;
     document.getElementById('deloadBanner').style.display = isDeload ? "block" : "none";
@@ -509,7 +611,14 @@
     const anki = document.getElementById('repAnki').value || "0";
     const sInput = document.getElementById('repSInput').value || "0";
     const sOutput = document.getElementById('repSOutput').value;
-    const math = document.getElementById('repMath').value || "None";
+    
+    const mathTime = document.getElementById('repMathTime').value || "None";
+    const mathMastery = document.getElementById('repMathMastery').value || "0";
+    const mathVelocity = document.getElementById('repMathVelocity').value || "0";
+    
+    const breakfast = document.getElementById('repBreakfast').value || "Not logged / Skipped";
+    const lunch = document.getElementById('repLunch').value || "Not logged / Skipped";
+    
     const workout = document.getElementById('repWorkout').value || "None";
     const lanes = document.getElementById('repLanes').value || "None";
     const sleep = document.getElementById('repSleep').value || "Not logged";
@@ -518,8 +627,13 @@
     const reportMarkdown = `Anki cards done: ${anki}
 Spanish input minutes: ${sInput}
 Output done: ${sOutput === 'Yes' ? 'y' : 'n'}
-Math minutes + topic: ${math}
-Workout completed + numbers: ${workout}
+Math track + details: ${mathTime}
+Math Course Mastery: ${mathMastery}%
+Math Skills Mastered: ${mathVelocity}
+Breakfast log: ${breakfast}
+Lunch log: ${lunch}
+Workout completed + numbers:
+${workout}
 Lanes ticked: ${lanes}
 Sleep hours: ${sleep}
 Energy: ${energy}`;
@@ -529,14 +643,14 @@ Energy: ${energy}`;
       alertBox.style.display = 'block';
       setTimeout(() => alertBox.style.display = 'none', 3000);
     }).catch(err => {
-      alert("Failed to copy automatically. Here is your markdown:\n\n" + reportMarkdown);
+      alert("Failed to copy automatically. Copy this markdown block:\n\n" + reportMarkdown);
     });
   }
 
   function exportData() {
     const rawData = localStorage.getItem(STORAGE_KEY);
     if (!rawData) {
-      alert("No active data found. Check off some tasks to generate state history first.");
+      alert("No active data found to backup yet.");
       return;
     }
     const encodedData = btoa(unescape(encodeURIComponent(rawData)));
@@ -558,13 +672,13 @@ Energy: ${energy}`;
       const parsedState = JSON.parse(decodedJSON);
       if (parsedState && typeof parsedState === "object") {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(parsedState));
-        alert("Restored successfully! Restarting dashboard...");
+        alert("System data restored successfully! Rebuilding layout...");
         window.location.reload();
       } else {
-        alert("Invalid code format. Make sure you copied the entire code block.");
+        alert("Invalid format code tracking error.");
       }
     } catch (e) {
-      alert("Failed to decode. Please make sure you are pasting the exact, unmodified backup string.");
+      alert("Failed to decode tracking string. Ensure complete block was copied.");
     }
   }
 
