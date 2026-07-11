@@ -1,689 +1,828 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Operator Control Center // v2.0</title>
-  <style>
-    :root {
-      --bg: #05070f;       /* Deep pitch black for ultimate contrast */
-      --panel: #0d1321;    /* Solid navy-black panel background */
-      --border: #2d3748;   /* Thicker, bolder borders */
-      --text: #ffffff;     /* Stark white text for maximum legibility */
-      --muted: #a0aec0;    /* High-contrast cool gray */
-      --accent: #00ffaa;   /* Radioactive neon green */
-      --brand: #818cf8;    /* Hyper-bright vivid indigo */
-      --warn: #ff9f00;     /* Intense warning amber */
-      --danger: #ff4a4a;   /* Tactical red */
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-      line-height: 1.5;
-      padding: 16px;
-      -webkit-font-smoothing: antialiased;
-    }
-    .container { max-width: 850px; margin: 0 auto; }
-    
-    header {
-      background: linear-gradient(135deg, #0f1123, #070913);
-      border: 2px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    }
-    h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 6px; text-transform: uppercase; }
-    .subtitle { color: var(--accent); font-weight: 800; font-size: 0.85rem; letter-spacing: 0.15em; }
-    
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-top: 20px;
-    }
-    .stat-card {
-      background: rgba(255,255,255,0.02);
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      text-align: center;
-    }
-    .stat-val { font-size: 1.6rem; font-weight: 900; color: var(--brand); }
-    .stat-lbl { font-size: 0.8rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPERATOR // Command Console</title>
+<style>
+  :root{
+    --bg:#05070f;
+    --ink:#ffffff;
+    --muted:#9aa3cc;
+    --mono: ui-monospace,'SF Mono','Roboto Mono',Menlo,Consolas,monospace;
+    --sans: 'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --glass: rgba(16,20,38,.62);
+    --line: rgba(140,160,255,.32);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:var(--bg);
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+    padding:18px 14px 60px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .bg{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  .bg::before{
+    content:'';position:absolute;inset:0;
+    background:
+      radial-gradient(58% 48% at 10% 6%, rgba(255,46,99,.24), transparent 60%),
+      radial-gradient(54% 46% at 92% 4%, rgba(0,229,255,.22), transparent 60%),
+      radial-gradient(64% 58% at 50% 104%, rgba(157,78,221,.26), transparent 60%);
+  }
+  .bg::after{
+    content:'';position:absolute;inset:-2px;
+    background-image:
+      linear-gradient(rgba(140,160,255,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,160,255,.06) 1px, transparent 1px);
+    background-size:44px 44px;
+    -webkit-mask:radial-gradient(circle at 50% 24%, #000 0%, transparent 80%);
+    mask:radial-gradient(circle at 50% 24%, #000 0%, transparent 80%);
+    animation:drift 34s linear infinite;
+  }
+  @keyframes drift{from{background-position:0 0,0 0;}to{background-position:44px 44px,44px 44px;}}
+  .wrap{position:relative;z-index:1;max-width:1010px;margin:0 auto;}
 
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-    }
-    .tab-btn {
-      background: var(--panel);
-      border: 2px solid var(--border);
-      color: var(--muted);
-      padding: 10px 20px;
-      border-radius: 24px;
-      cursor: pointer;
-      white-space: nowrap;
-      font-size: 0.95rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      transition: all 0.15s ease;
-    }
-    .tab-btn:hover { border-color: var(--brand); color: #fff; }
-    .tab-btn.active {
-      background: var(--brand);
-      color: #fff;
-      border-color: transparent;
-      box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
-    }
+  /* hero */
+  .brand h1{
+    margin:0;font-weight:900;line-height:.98;letter-spacing:.02em;
+    font-size:clamp(26px,7vw,42px);
+    background:linear-gradient(92deg,#00e5ff,#9d4edd 52%,#ff2e63);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 34px rgba(0,229,255,.25);
+  }
+  .brand .tag{
+    color:var(--muted);margin-top:8px;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;font-family:var(--mono);font-weight:700;
+  }
 
-    .grid-layout {
-      display: grid;
-      grid-template-columns: 1.25fr 0.75fr;
-      gap: 20px;
-    }
-    @media (max-width: 768px) {
-      .grid-layout { grid-template-columns: 1fr; }
-    }
+  /* stat grid */
+  .statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:18px;}
+  .statcard{border:2px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center;background:rgba(255,255,255,.03);position:relative;overflow:hidden;}
+  .statcard b{font-family:var(--mono);font-size:22px;display:block;color:#fff;line-height:1;text-shadow:0 0 12px rgba(0,229,255,.4);}
+  .statcard span{font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;display:block;margin-top:5px;}
+  .statcard.donutcard{display:flex;align-items:center;justify-content:center;}
+  .donut-mini{position:relative;width:56px;height:56px;}
+  .donut-mini .cap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;font-weight:900;color:#fff;}
+  circle.prog{transition:stroke-dashoffset .9s cubic-bezier(.2,.7,.2,1);}
+  .deload-banner{margin-top:10px;text-align:center;border:2px dashed #ff8c00;border-radius:12px;padding:9px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:#ff8c00;font-weight:800;text-transform:uppercase;box-shadow:0 0 18px rgba(255,140,0,.18);}
 
-    .panel-content { display: none; }
-    .panel-content.active { display: block; }
+  /* tabs */
+  .tabbar{display:flex;gap:8px;overflow-x:auto;padding:16px 2px 4px;-webkit-overflow-scrolling:touch;}
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tabbtn{flex:0 0 auto;padding:10px 17px;border-radius:999px;border:2px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+  .tabbtn.active{background:linear-gradient(92deg,#00e5ff,#9d4edd);color:#05070f;border-color:transparent;box-shadow:0 0 18px rgba(0,229,255,.45);}
+  .tabpanel{display:none;}
+  .tabpanel.active{display:block;animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 
-    .task-card {
-      background: var(--panel);
-      border: 2px solid var(--border);
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      transition: border-color 0.2s ease;
-    }
-    .task-card:hover { border-color: #3f4e66; }
-    .task-checkbox {
-      width: 24px;
-      height: 24px;
-      margin-top: 1px;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-    .task-info { flex: 1; }
-    .task-title { font-weight: 800; font-size: 1.1rem; color: #fff; }
-    .task-desc { color: var(--muted); font-size: 0.9rem; margin-top: 4px; font-weight: 500; }
-    .task-card.completed { opacity: 0.4; border-color: rgba(16, 185, 129, 0.15); background: rgba(5,7,15,0.4); }
-    .task-card.completed .task-title { text-decoration: line-through; color: var(--muted); }
+  /* panels */
+  .panel{
+    background:var(--glass);
+    border:2px solid var(--line);
+    border-radius:20px;
+    padding:20px 18px;
+    margin-bottom:16px;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    box-shadow:0 18px 50px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+  }
+  .sec{display:flex;align-items:center;gap:10px;margin:0 0 4px;}
+  .sec h2{margin:0;font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:900;color:#fff;}
+  .sec .dot{width:9px;height:9px;border-radius:50%;background:#00e5ff;box-shadow:0 0 12px #00e5ff;flex:0 0 auto;}
+  .sec .hint{margin-left:auto;font-size:10px;color:var(--muted);font-family:var(--mono);letter-spacing:.04em;font-weight:700;}
 
-    .time-block {
-      border-left: 3px solid var(--border);
-      padding-left: 18px;
-      margin-left: 10px;
-      position: relative;
-      padding-bottom: 24px;
-    }
-    .time-block::before {
-      content: '';
-      position: absolute;
-      left: -7px;
-      top: 6px;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--border);
-    }
-    .time-val { font-size: 0.85rem; font-weight: 900; color: var(--accent); letter-spacing: 0.05em; }
-    .time-title { font-weight: 800; font-size: 1.05rem; margin-top: 2px; }
-    .time-desc { color: var(--muted); font-size: 0.9rem; margin-top: 2px; font-weight: 500; }
+  /* radar */
+  .radar-box{display:flex;justify-content:center;margin-top:6px;}
+  .radar-box svg{width:100%;max-width:430px;height:auto;}
+  #radarData{transform-origin:220px 196px;animation:grow 1s cubic-bezier(.2,.8,.2,1) both;}
+  @keyframes grow{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .axis-label{font-family:var(--mono);font-size:11px;fill:#c3cbef;letter-spacing:.04em;font-weight:700;}
 
-    .form-section-title {
-      font-size: 1rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--brand);
-      margin: 18px 0 10px 0;
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 4px;
-    }
-    .form-group { margin-bottom: 14px; }
-    label { display: block; font-size: 0.9rem; font-weight: 800; color: #fff; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.02em; }
-    input[type="text"], input[type="number"], select, textarea {
-      width: 100%;
-      background: #161f30;
-      border: 2px solid var(--border);
-      color: #fff;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 700;
-    }
-    input:focus, select:focus, textarea:focus { border-color: var(--brand); outline: none; background: #1a2438; }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    
-    .side-card {
-      background: var(--panel);
-      border: 2px solid var(--border);
-      border-radius: 14px;
-      padding: 18px;
-      margin-bottom: 18px;
-    }
-    .side-card-title {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--accent);
-      margin-bottom: 14px;
-      font-weight: 900;
-    }
+  /* domain modules */
+  .domains{display:grid;grid-template-columns:repeat(auto-fit,minmax(286px,1fr));gap:14px;}
+  .dcard{--c:#00e5ff;background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(0,0,0,.14));border:2px solid color-mix(in srgb, var(--c) 42%, transparent);border-radius:16px;padding:15px 14px;box-shadow:0 10px 30px rgba(0,0,0,.35);position:relative;overflow:hidden;}
+  .dcard::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--c);box-shadow:0 0 16px var(--c);}
+  .dhead{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .dhead .ic{font-size:20px;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--c) 70%,transparent));}
+  .dhead .nm{font-size:13.5px;font-weight:900;letter-spacing:.01em;flex:1;color:#fff;}
+  .dhead .pct{font-family:var(--mono);font-size:20px;color:var(--c);line-height:1;text-shadow:0 0 14px color-mix(in srgb,var(--c) 60%,transparent);}
+  .dhead .pct small{display:block;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-shadow:none;margin-top:3px;text-align:right;font-weight:700;}
+  .skill{margin-bottom:11px;}
+  .skill:last-child{margin-bottom:2px;}
+  .srow{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .sname{font-size:12px;color:#e4e8ff;flex:1;font-weight:600;}
+  .sval{font-family:var(--mono);font-size:11.5px;color:#fff;min-width:30px;text-align:right;font-weight:800;}
+  .step{width:24px;height:24px;flex:0 0 auto;border-radius:7px;cursor:pointer;border:2px solid color-mix(in srgb,var(--c) 55%,transparent);background:rgba(255,255,255,.05);color:#fff;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;transition:transform .12s, background .15s;-webkit-tap-highlight-color:transparent;}
+  .step:active{transform:scale(.88);}
+  .track{height:9px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;box-shadow:inset 0 0 8px rgba(0,0,0,.5);}
+  .fill{height:100%;width:0%;border-radius:6px;background:linear-gradient(90deg, color-mix(in srgb,var(--c) 55%,#000), var(--c));box-shadow:0 0 12px color-mix(in srgb,var(--c) 75%,transparent);transition:width .65s cubic-bezier(.2,.8,.2,1);}
 
-    .btn {
-      width: 100%;
-      background: var(--brand);
-      color: #fff;
-      border: none;
-      padding: 14px;
-      border-radius: 8px;
-      font-weight: 900;
-      cursor: pointer;
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-top: 10px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    }
-    .btn:active { transform: translateY(1px); box-shadow: none; }
-    .btn-secondary {
-      background: transparent;
-      border: 2px solid var(--border);
-      color: var(--text);
-    }
-    .btn-secondary:hover { background: rgba(255, 255, 255, 0.04); border-color: var(--muted); }
+  /* skyline */
+  .sky-floor{position:relative;border-radius:14px;padding:22px 8px 0;margin-top:8px;overflow-x:auto;background:linear-gradient(rgba(140,160,255,.08) 1px,transparent 1px) 0 0/100% 26px, radial-gradient(120% 80% at 50% 120%, rgba(157,78,221,.16), transparent 70%);border-bottom:2px solid rgba(140,160,255,.35);}
+  .sky{display:flex;align-items:flex-end;justify-content:space-around;gap:10px;min-width:520px;height:204px;}
+  .colwrap{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;flex:1;}
+  .cv{font-family:var(--mono);font-size:11px;color:#fff;margin-bottom:7px;font-weight:800;}
+  .col{width:38px;border-radius:5px 5px 1px 1px;background:linear-gradient(180deg, #fff2, transparent), linear-gradient(180deg, var(--c), color-mix(in srgb,var(--c) 35%,#000));transition:height .7s cubic-bezier(.2,.8,.2,1);min-height:8px;}
+  .cn{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-top:10px;text-align:center;font-weight:700;}
 
-    /* Loci Codex Accordion */
-    .codex-container {
-      background: #090e1a;
-      border: 2px dashed var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      margin-top: 10px;
-    }
-    .codex-summary {
-      font-weight: 900;
-      color: var(--warn);
-      cursor: pointer;
-      text-transform: uppercase;
-      font-size: 0.9rem;
-      letter-spacing: 0.02em;
-      outline: none;
-      user-select: none;
-    }
-    .codex-content {
-      font-size: 0.85rem;
-      margin-top: 10px;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-    .codex-content strong { color: #fff; }
-    .codex-rule { margin-bottom: 8px; padding-left: 8px; border-left: 2px solid var(--warn); }
+  /* mission timeline */
+  .phases{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 6px;margin-top:6px;}
+  .phase{flex:1 0 188px;border:2px solid var(--line);border-radius:14px;padding:13px;cursor:pointer;background:rgba(255,255,255,.02);transition:all .15s;position:relative;}
+  .phase .pn{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted);display:flex;justify-content:space-between;font-weight:800;}
+  .phase .pt{font-size:13.5px;font-weight:900;margin:8px 0 6px;color:#fff;}
+  .phase .pd{font-size:11px;line-height:1.5;color:#aab2da;}
+  .phase.active{border-color:#00e5ff;background:linear-gradient(180deg, rgba(0,229,255,.12), rgba(0,229,255,.02));box-shadow:0 0 22px rgba(0,229,255,.2);}
+  .phase.active .pn{color:#00e5ff;}
+  .phase.active::after{content:'● ACTIVE';position:absolute;top:11px;right:13px;font-family:var(--mono);font-size:8px;letter-spacing:.1em;color:#00e5ff;font-weight:800;}
+  .legendline{text-align:center;font-size:10px;color:var(--muted);font-family:var(--mono);letter-spacing:.06em;margin-top:16px;line-height:1.8;font-weight:600;}
 
-    #copyAlert, #backupAlert {
-      display: none;
-      background: var(--accent);
-      color: #0b0f19;
-      text-align: center;
-      padding: 12px;
-      border-radius: 8px;
-      font-weight: 900;
-      margin-top: 12px;
-      font-size: 0.95rem;
-      text-transform: uppercase;
-    }
-  </style>
+  /* lanes */
+  .lanes-grid{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px;}
+  .lane{flex:1 1 140px;border:2px solid var(--line);border-radius:14px;padding:13px 14px;cursor:pointer;background:rgba(255,255,255,.02);display:flex;align-items:center;gap:11px;transition:all .18s;-webkit-tap-highlight-color:transparent;}
+  .lane .lic{font-size:20px;}
+  .lane .ltx{flex:1;}
+  .lane .ltx b{font-size:13px;display:block;color:#fff;}
+  .lane .ltx span{font-size:10px;color:var(--muted);font-weight:600;}
+  .lane .chk{width:22px;height:22px;border-radius:7px;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;transition:all .18s;}
+  .lane.on{border-color:#39ff14;background:linear-gradient(180deg,rgba(57,255,20,.12),transparent);box-shadow:0 0 18px rgba(57,255,20,.18);}
+  .lane.on .chk{border-color:#39ff14;background:#39ff14;color:#05070f;}
+  .streak{display:flex;align-items:center;gap:12px;flex:1 1 200px;justify-content:flex-end;}
+  .streak .flame{font-size:30px;filter:drop-shadow(0 0 12px #ff8c00);}
+  .streak .sd b{font-family:var(--mono);font-size:30px;color:#ff8c00;line-height:1;text-shadow:0 0 16px rgba(255,140,0,.5);}
+  .streak .sd span{font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;font-weight:700;}
+  .logbtn{margin-top:14px;width:100%;padding:13px;border-radius:12px;cursor:pointer;font-family:var(--mono);letter-spacing:.12em;font-size:12px;text-transform:uppercase;color:#05070f;font-weight:900;border:none;background:linear-gradient(92deg,#39ff14,#00e5ff);box-shadow:0 0 22px rgba(57,255,20,.32);transition:transform .12s;-webkit-tap-highlight-color:transparent;}
+  .logbtn:active{transform:scale(.98);}
+  .logmsg{text-align:center;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:9px;min-height:14px;font-weight:600;}
+
+  /* weekly targets */
+  .weekbar{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .weekbox{font-family:var(--mono);text-align:center;}
+  .weekbox b{font-size:26px;color:#ff8c00;display:block;line-height:1;text-shadow:0 0 14px rgba(255,140,0,.5);}
+  .weekbox span{font-size:9px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;font-weight:700;}
+  .sprintlbl{margin-left:auto;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--muted);text-align:right;text-transform:uppercase;font-weight:700;}
+  .sprintlbl b{font-size:15px;color:#fff;letter-spacing:.01em;text-transform:none;display:block;margin-top:2px;}
+  .targets{display:grid;gap:9px;}
+  .tgt{display:flex;align-items:center;gap:11px;border:2px solid var(--line);border-radius:11px;padding:11px 13px;cursor:pointer;background:rgba(255,255,255,.02);transition:all .16s;-webkit-tap-highlight-color:transparent;}
+  .tgt .chk{width:20px;height:20px;border-radius:6px;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;transition:all .16s;flex:0 0 auto;}
+  .tgt span{font-size:12.5px;color:#e4e8ff;font-weight:600;}
+  .tgt.on{border-color:#ff8c00;background:linear-gradient(180deg,rgba(255,140,0,.1),transparent);}
+  .tgt.on .chk{border-color:#ff8c00;background:#ff8c00;color:#05070f;}
+
+  /* schedule */
+  .sched-progress{text-align:center;font-family:var(--mono);font-size:11px;color:#00e5ff;letter-spacing:.1em;margin-bottom:14px;font-weight:800;}
+  .sched-item{border-left:3px solid var(--line);padding:11px 0 11px 18px;margin-left:8px;position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .sched-item::before{content:'';position:absolute;left:-9px;top:15px;width:15px;height:15px;border-radius:50%;background:#0d1220;border:2px solid var(--muted);transition:all .15s;}
+  .sched-item.done{opacity:.5;}
+  .sched-item.done::before{background:#39ff14;border-color:#39ff14;box-shadow:0 0 10px #39ff14;}
+  .sched-item.done .st-title{text-decoration:line-through;}
+  .st-time{font-family:var(--mono);font-size:11px;color:#00e5ff;letter-spacing:.05em;font-weight:800;}
+  .st-title{font-weight:800;font-size:13.5px;margin-top:3px;color:#fff;}
+  .st-desc{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.5;font-weight:500;}
+
+  /* reporter */
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .fgroup{margin-bottom:12px;}
+  .fgroup label{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#cdd5ff;margin-bottom:6px;font-weight:800;}
+  .fgroup input, .fgroup select, .fgroup textarea{width:100%;background:#0d1220;border:2px solid var(--line);color:#fff;padding:11px;border-radius:9px;font-size:14px;font-family:inherit;font-weight:600;}
+  .fgroup textarea{resize:vertical;min-height:64px;}
+  .fgroup input:focus, .fgroup select:focus, .fgroup textarea:focus{border-color:#00e5ff;outline:none;}
+  .fsectitle{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#00e5ff;margin:16px 0 10px;border-bottom:2px solid var(--line);padding-bottom:6px;}
+  .fsectitle:first-child{margin-top:0;}
+  .genbtn{width:100%;padding:13px;border-radius:12px;cursor:pointer;font-family:var(--mono);letter-spacing:.1em;font-size:12px;text-transform:uppercase;color:#05070f;font-weight:900;border:none;background:linear-gradient(92deg,#ff8c00,#ff2e63);box-shadow:0 0 22px rgba(255,140,0,.32);margin-top:6px;}
+  .genout{width:100%;min-height:180px;background:#070a14;border:2px dashed var(--line);border-radius:10px;padding:12px;color:#39ff14;font-family:var(--mono);font-size:11px;line-height:1.65;margin-top:12px;font-weight:600;}
+  .copybtn{width:100%;margin-top:8px;padding:11px;border-radius:10px;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#fff;font-weight:800;border:2px solid var(--line);background:rgba(255,255,255,.03);}
+  .copyok{display:none;text-align:center;color:#39ff14;font-family:var(--mono);font-size:10.5px;margin-top:8px;font-weight:800;letter-spacing:.06em;}
+
+  /* protocols */
+  .pcard{border:2px solid var(--line);border-radius:14px;padding:15px 16px;margin-bottom:12px;background:rgba(255,255,255,.02);}
+  .pcard h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;font-weight:900;}
+  .pcard p{font-size:12.5px;color:#c3cbef;line-height:1.6;font-weight:500;}
+  .codexbox{background:#070a14;border:2px dashed var(--line);border-radius:12px;padding:14px;margin-bottom:14px;}
+  .codexsum{font-weight:900;color:#ffd400;cursor:pointer;text-transform:uppercase;font-size:11.5px;letter-spacing:.05em;outline:none;}
+  .codexbody{font-size:12px;margin-top:12px;color:#c3cbef;line-height:1.6;}
+  .codexbody b{color:#fff;}
+  .codexrule{margin-bottom:9px;padding-left:10px;border-left:2px solid #ffd400;}
+  .storagebadge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;padding:8px 14px;border-radius:999px;border:2px solid var(--line);color:#00e5ff;margin-bottom:14px;font-weight:800;}
+  .datefield{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .datefield input[type=date]{background:#0d1220;border:2px solid var(--line);color:#fff;padding:10px;border-radius:9px;font-family:inherit;font-weight:700;flex:1;}
+
+  .foot{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px;}
+  .ghost{padding:11px 18px;border-radius:11px;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.03);color:#cdd5ff;border:2px solid var(--line);font-weight:800;}
+  .ghost.warn{border-color:#ff2e63;color:#ff9fb5;}
+
+  @media (max-width:560px){
+    .panel{padding:16px 13px;}
+    .statgrid{grid-template-columns:repeat(2,1fr);}
+    .frow{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important;transition:none !important;} }
+</style>
 </head>
 <body>
+<div class="bg"></div>
+<div class="wrap">
 
-<div class="container">
   <header>
-    <div class="subtitle">OPERATOR // SYSTEM RUN</div>
-    <h1>Control Console</h1>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-lbl">Target Day</div>
-        <input type="number" id="dayInput" min="1" max="175" value="1" style="width:100%; text-align:center; font-weight:900; background:transparent; border:none; color:var(--brand); font-size:1.6rem; padding:0; outline:none;">
-      </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Current Week</div>
-        <div class="stat-val" id="weekVal">1</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-lbl">Phase</div>
-        <div class="stat-val" id="phaseVal" style="font-size:1rem; margin-top:6px; font-weight:900;">Spanish Prim.</div>
+    <div class="brand">
+      <h1>OPERATOR&nbsp;//&nbsp;COMMAND</h1>
+      <div class="tag">6-Month Speed Sprint · 5-Year Build</div>
+    </div>
+    <div class="statgrid">
+      <div class="statcard"><b id="dayNum">1</b><span>Day / 175</span></div>
+      <div class="statcard"><b id="weekNumHead">1</b><span>Week / 25</span></div>
+      <div class="statcard"><b id="sprintPhaseHead" style="font-size:13px;">Spanish</b><span>Sprint Focus</span></div>
+      <div class="statcard donutcard">
+        <div class="donut-mini">
+          <svg viewBox="0 0 60 60" width="100%" height="100%">
+            <defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#00e5ff"/><stop offset="55%" stop-color="#9d4edd"/><stop offset="100%" stop-color="#ff2e63"/>
+            </linearGradient></defs>
+            <circle cx="30" cy="30" r="25" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="6"/>
+            <circle class="prog" id="donut" cx="30" cy="30" r="25" fill="none" stroke="url(#dg)" stroke-width="6" stroke-linecap="round" transform="rotate(-90 30 30)" stroke-dasharray="157" stroke-dashoffset="157"/>
+          </svg>
+          <div class="cap" id="donutTxt">0%</div>
+        </div>
       </div>
     </div>
-    <div id="deloadBanner" style="display:none; text-align:center; margin-top:14px; color:var(--warn); font-size:0.9rem; font-weight:900; letter-spacing:0.05em; border: 2px dashed var(--warn); padding: 6px; border-radius: 8px;">
-      *** DELOAD WEEK ACTIVE (HALVE ATHLETIC VOLUME) ***
+    <div class="deload-banner" id="deloadBanner" style="display:none;">*** DELOAD WEEK — HALVE ATHLETIC VOLUME ***</div>
+
+    <div class="tabbar" id="tabbar">
+      <button class="tabbtn active" data-tab="command">Command</button>
+      <button class="tabbtn" data-tab="today">Today</button>
+      <button class="tabbtn" data-tab="schedule">Schedule</button>
+      <button class="tabbtn" data-tab="reporter">Reporter</button>
+      <button class="tabbtn" data-tab="protocols">Protocols</button>
     </div>
   </header>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('today')">Checklist</button>
-    <button class="tab-btn" onclick="switchTab('schedule')">Schedule</button>
-    <button class="tab-btn" onclick="switchTab('reporter')">Gemini Reporter</button>
-    <button class="tab-btn" onclick="switchTab('rules')">Protocols</button>
+  <!-- ============ COMMAND TAB ============ -->
+  <div class="tabpanel active" id="tab-command">
+    <section class="panel">
+      <div class="sec"><span class="dot"></span><h2>Command Radar</h2><span class="hint">7 domains · live</span></div>
+      <div class="radar-box"><svg id="radar" viewBox="0 0 440 400" aria-label="Domain competence radar"></svg></div>
+    </section>
+
+    <section class="panel">
+      <div class="sec"><span class="dot" style="background:#ff2e63;box-shadow:0 0 12px #ff2e63"></span><h2>Domain Modules</h2><span class="hint">tap − / + to log</span></div>
+      <div class="domains" id="domains"></div>
+    </section>
+
+    <section class="panel">
+      <div class="sec"><span class="dot" style="background:#9d4edd;box-shadow:0 0 12px #9d4edd"></span><h2>Capability Skyline</h2><span class="hint">3D · by domain</span></div>
+      <div class="sky-floor"><div class="sky" id="sky"></div></div>
+    </section>
+
+    <section class="panel">
+      <div class="sec"><span class="dot" style="background:#ffd400;box-shadow:0 0 12px #ffd400"></span><h2>Mission Timeline (5-Year)</h2><span class="hint">tap your phase</span></div>
+      <div class="phases" id="phases"></div>
+      <div class="legendline">
+        NOVICE · BEGINNER · COMPETENT · PROFICIENT · ADVANCED · MASTERY<br>
+        Competent ≈ collegiate / solid-intermediate &nbsp;|&nbsp; Mastery = beyond Year 5
+      </div>
+    </section>
   </div>
 
-  <div class="grid-layout">
-    <main>
-      <!-- CHECKLIST PANEL -->
-      <div id="today" class="panel-content active">
-        <div id="taskList"></div>
+  <!-- ============ TODAY TAB ============ -->
+  <div class="tabpanel" id="tab-today">
+    <section class="panel">
+      <div class="sec"><span class="dot" style="background:#39ff14;box-shadow:0 0 12px #39ff14"></span><h2>Daily Lanes</h2><span class="hint">always-on habits</span></div>
+      <div class="lanes-grid">
+        <div class="lane" data-lane="train"><span class="lic">🥋</span><div class="ltx"><b>Train + Recover</b><span>physical · sleep</span></div><div class="chk">✓</div></div>
+        <div class="lane" data-lane="mem"><span class="lic">🧠</span><div class="ltx"><b>Memory + Observe</b><span>loci · reads</span></div><div class="chk">✓</div></div>
+        <div class="lane" data-lane="draw"><span class="lic">✏️</span><div class="ltx"><b>Draw</b><span>25 min</span></div><div class="chk">✓</div></div>
+        <div class="lane" data-lane="cns"><span class="lic">🌬️</span><div class="ltx"><b>CNS / Breath</b><span>cold · box breath</span></div><div class="chk">✓</div></div>
+        <div class="streak"><div class="sd" style="text-align:right"><b id="streakNum">0</b><br><span>Day Streak</span></div><span class="flame">🔥</span></div>
       </div>
+      <button class="logbtn" id="logDay">Complete Today &nbsp;✓</button>
+      <div class="logmsg" id="logMsg">Check all four lanes, then log the day to build your streak.</div>
+    </section>
 
-      <!-- SCHEDULE PANEL -->
-      <div id="schedule" class="panel-content">
-        <div class="time-block">
-          <div class="time-val">06:00 - 06:10</div>
-          <div class="time-title">Wake Protocol</div>
-          <div class="time-desc">Water, shoes on, absolute phone lockout.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">06:10 - 06:50</div>
-          <div class="time-title">Morning Calisthenics Session (Daily Strength)</div>
-          <div class="time-desc">Circuit x4 rounds: Pushups → Squats → Plank → Lunges → Pull-ups. Strict volume baseline logging.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">07:00 - 07:10</div>
-          <div class="time-title">CNS Lane</div>
-          <div class="time-desc">Vegas Heat Alternative: Deep ice-water face dunks (10-15s x3) + Box breathing (4-4-4-4) x10 rounds.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">07:10 - 07:45</div>
-          <div class="time-title">Breakfast Block</div>
-          <div class="time-desc">Fuel injection. Target complex carbs, clean fats, and macro proteins. Log details or constraints.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">08:00 - 09:40</div>
-          <div class="time-title">Spanish Engine &amp; Study</div>
-          <div class="time-desc">Anki/AlgoApp (shadow aloud), Language Transfer logic processing, Dreaming Spanish immersion.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">09:55 - 11:25</div>
-          <div class="time-title">Math Block (Khan Academy Velocity Sprint)</div>
-          <div class="time-desc">Rapid but diligent full Arithmetic course sweep. Run fast through known skills; anchor on leaks.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">11:25 - 11:45</div>
-          <div class="time-title">Memory Lane (Method of Loci)</div>
-          <div class="time-desc">Map core concepts/sticky words to distinct household loci using absurd, interactive imagery.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">11:45 - 12:30</div>
-          <div class="time-title">Lunch Block</div>
-          <div class="time-desc">System idling. Absolute recovery. Screen-free window. Adaptive/budget flex field.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">12:30 - 13:00</div>
-          <div class="time-title">Drawing Lane</div>
-          <div class="time-desc">Drawabox Lesson 1: Mechanical accuracy on paper (lines/ellipses).</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">13:00 - 13:30</div>
-          <div class="time-title">NSDR / Siesta</div>
-          <div class="time-desc">Non-Sleep Deep Rest. Neurological consolidation of morning information.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">13:30 - 15:00</div>
-          <div class="time-title">Spanish Deep Input</div>
-          <div class="time-desc">Pure beginner-to-intermediate level structural immersion.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">15:00 - 17:30</div>
-          <div class="time-title">Flex / Life / Work Lane</div>
-          <div class="time-desc">Errands, real-world structural tasks. Desert environment heat lockout window.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">17:30 - 18:00</div>
-          <div class="time-title">Observation Lane</div>
-          <div class="time-desc">Kim's Game matrix analysis or environmental baseline scanning.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">18:00 - 20:00</div>
-          <div class="time-title">Dinner &amp; Structural Flex</div>
-          <div class="time-desc">Nutrition replenishment, processing, baseline checklist validation.</div>
-        </div>
-        <div class="time-block">
-          <div class="time-val">20:00 - 20:40</div>
-          <div class="time-title">Nightly Combat Session (Technical Isolation)</div>
-          <div class="time-desc">6 rounds technical shadowboxing (3m work, 1m rest). Strict focus mechanics (Stance &amp; Step-Drag).</div>
-        </div>
+    <section class="panel">
+      <div class="sec"><span class="dot" style="background:#ff8c00;box-shadow:0 0 12px #ff8c00"></span><h2>This Week's Targets</h2><span class="hint" id="weekHint">auto-resets weekly</span></div>
+      <div class="weekbar">
+        <div class="weekbox"><b id="weekNum">1</b><span>of 25</span></div>
+        <div class="sprintlbl">Sprint Focus<br><b id="sprintPhaseBody">Spanish</b></div>
       </div>
-
-      <!-- GEMINI REPORTER PANEL -->
-      <div id="reporter" class="panel-content">
-        
-        <div class="form-section-title">1. Language Operations</div>
-        <div class="form-group">
-          <label for="repAnki">Anki / Vocab Cards Completed</label>
-          <input type="number" id="repAnki" placeholder="e.g. 15">
-        </div>
-        <div class="row">
-          <div class="form-group">
-            <label for="repSInput">Spanish Input (Mins)</label>
-            <input type="number" id="repSInput" placeholder="e.g. 42">
-          </div>
-          <div class="form-group">
-            <label for="repSOutput">Spanish Output Done?</label>
-            <select id="repSOutput">
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-section-title">2. Quantitative Velocity Sprint</div>
-        <div class="form-group">
-          <label for="repMathTime">Math Practice Duration &amp; Units</label>
-          <input type="text" id="repMathTime" placeholder="e.g. 35 mins - Arithmetic Course Challenge">
-        </div>
-        <div class="row">
-          <div class="form-group">
-            <label for="repMathMastery">Current Course Mastery (%)</label>
-            <input type="number" id="repMathMastery" min="0" max="100" placeholder="e.g. 18">
-          </div>
-          <div class="form-group">
-            <label for="repMathVelocity">Skills Mastered Today</label>
-            <input type="number" id="repMathVelocity" placeholder="e.g. 6">
-          </div>
-        </div>
-
-        <div class="form-section-title">3. Adaptive Nutrition Tracking</div>
-        <div class="row">
-          <div class="form-group">
-            <label for="repBreakfast">Breakfast Log</label>
-            <input type="text" id="repBreakfast" placeholder="e.g. Eggs, oats, avocado / Skipped">
-          </div>
-          <div class="form-group">
-            <label for="repLunch">Lunch Log</label>
-            <input type="text" id="repLunch" placeholder="e.g. Budget snack, water / Skipped">
-          </div>
-        </div>
-
-        <div class="form-section-title">4. Physical Engine &amp; Vitals</div>
-        <div class="form-group">
-          <label for="repWorkout">Workout Details &amp; Raw Numbers</label>
-          <textarea id="repWorkout" rows="3" placeholder="Pushups: 30,14,13,12&#10;Squats: 25,15,12,10&#10;Combat: 6 rds technical drills"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="repLanes">Lanes Ticked (Space-separated list or 'All')</label>
-          <input type="text" id="repLanes" value="Physical Memory Drawing CNS">
-        </div>
-        <div class="row">
-          <div class="form-group">
-            <label for="repSleep">Sleep Hours</label>
-            <input type="number" id="repSleep" step="0.1" placeholder="e.g. 6.5">
-          </div>
-          <div class="form-group">
-            <label for="repEnergy">Energy Level (1-10)</label>
-            <input type="number" id="repEnergy" min="1" max="10" placeholder="e.g. 7">
-          </div>
-        </div>
-        
-        <button class="btn" onclick="generateAndCopyReport()">Generate &amp; Copy Report</button>
-        <div id="copyAlert">Report compiled and copied to clipboard! Paste directly to Gemini.</div>
-      </div>
-
-      <!-- RULES & PROTOCOLS PANEL -->
-      <div id="rules" class="panel-content">
-        <!-- Built-in Loci Codex Dropdown Reference Guide -->
-        <details class="codex-container" open style="margin-bottom: 16px;">
-          <summary class="codex-summary">📖 METHOD OF LOCI SYSTEM CODEX</summary>
-          <div class="codex-content">
-            <div class="codex-rule">
-              <strong>1. The Pronunciation:</strong> Singular is <strong>Locus</strong> (<em>"LOW-kus"</em> = one place). Plural is <strong>Loci</strong> (<em>"LOW-sy"</em> = multiple places). It means "places" in Latin.
-            </div>
-            <div class="codex-rule">
-              <strong>2. Rule of Absurdity:</strong> If it is normal, the brain deletes it. Images injected into a locus must be highly stylized, violent, hilarious, or disgusting. Engage physical senses (textures, smells, weight).
-            </div>
-            <div class="codex-rule">
-              <strong>3. Phrase Extraction Rule:</strong> For complex, long phrases (>10 words), do not memorize every word. Pick <em>one</em> core structural word to build the movie around; let your natural grammar fill the rest upon execution.
-            </div>
-            <div class="codex-rule">
-              <strong>4. Palace Clear-Out:</strong> The palace is a <strong>temporary loading dock</strong>. Once a word bridges into long-term memory via review apps, the mental movie naturally dissolves, freeing the location for fresh data. Rotate environments if overlap occurs.
-            </div>
-          </div>
-        </details>
-
-        <div style="background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
-          <h3 style="color:var(--accent); margin-bottom:8px; font-weight:900;">Vegas Heat Rule</h3>
-          <p style="font-size:0.95rem; color:var(--muted); font-weight:600;">Outdoor training strictly before 8:00am or after 8:00pm when temperatures exceed 100°F. If CNS cold shock is unavailable due to ground-baked tap water, deploy ice-water face basin submersions.</p>
-        </div>
-        <div style="background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
-          <h3 style="color:var(--brand); margin-bottom:8px; font-weight:900;">Physical Grid Track</h3>
-          <p style="font-size:0.95rem; color:var(--muted); font-weight:600;">Morning Calisthenics strength block (Pushups → Squats → Plank → Lunges → Pull-ups) + Nightly Combat technical isolation blocks are mandatory daily requirements.</p>
-        </div>
-        <div style="background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px;">
-          <h3 style="color:var(--brand); margin-bottom:8px; font-weight:900;">Cognitive Primaries</h3>
-          <p style="font-size:0.95rem; color:var(--muted); font-weight:600;">Weeks 1 to 13: Spanish focus (Math maintenance/sprint 60-90m).<br>Weeks 14 to 25: Math focus (Spanish maintenance 60m).</p>
-        </div>
-        <div style="background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:16px;">
-          <h3 style="color:var(--warn); margin-bottom:8px; font-weight:900;">Error Correction Rule</h3>
-          <p style="font-size:0.95rem; color:var(--muted); font-weight:600;">Missed a block? Reset instantly. Do not burn mental energy on guilt. Compress subsequent targets to absolute high-yield minimum viable tasks and move forward immediately.</p>
-        </div>
-      </div>
-    </main>
-
-    <aside>
-      <div class="side-card">
-        <div class="side-card-title">Data Guard</div>
-        <p style="font-size:0.85rem; color:var(--muted); margin-bottom:12px; line-height:1.4; font-weight:600;">
-          Prevent browser clear-outs. Export to save a secure backup string. Import to restore your data anytime.
-        </p>
-        <button class="btn btn-secondary" onclick="exportData()" style="padding:10px 0; font-size:0.85rem; font-weight:800;">Export Progress Code</button>
-        <button class="btn btn-secondary" onclick="importData()" style="padding:10px 0; font-size:0.85rem; font-weight:800; margin-top:8px;">Import Backup Code</button>
-        <div id="backupAlert">Code copied! Save it in your personal notes.</div>
-      </div>
-
-      <div class="side-card">
-        <div class="side-card-title">System Status</div>
-        <p style="font-size:0.9rem; line-height:1.7; font-weight:700;">
-          • Budget: <span style="color:var(--danger); font-weight:900;">Adaptive Flex</span><br>
-          • Set-up: <span style="color:var(--brand); font-weight:900;">Home + Park</span><br>
-          • Math Focus: <span style="color:var(--warn); font-weight:900;">Velocity Sprint</span>
-        </p>
-      </div>
-    </aside>
+      <div class="targets" id="targets"></div>
+    </section>
   </div>
+
+  <!-- ============ SCHEDULE TAB ============ -->
+  <div class="tabpanel" id="tab-schedule">
+    <section class="panel">
+      <div class="sec"><span class="dot" style="background:#00e5ff;box-shadow:0 0 12px #00e5ff"></span><h2>Today's Schedule</h2><span class="hint">resets each morning</span></div>
+      <div class="sched-progress" id="schedProgress">0 / 0 blocks</div>
+      <div id="schedList"></div>
+    </section>
+  </div>
+
+  <!-- ============ REPORTER TAB ============ -->
+  <div class="tabpanel" id="tab-reporter">
+    <section class="panel">
+      <div class="sec"><span class="dot" style="background:#ff2e63;box-shadow:0 0 12px #ff2e63"></span><h2>Gemini Reporter</h2><span class="hint">fill · generate · paste</span></div>
+
+      <div class="fsectitle">Language</div>
+      <div class="frow">
+        <div class="fgroup"><label>Anki Cards Done</label><input type="number" id="repAnki" placeholder="15"></div>
+        <div class="fgroup"><label>Spanish Input (min)</label><input type="number" id="repInput" placeholder="42"></div>
+      </div>
+      <div class="fgroup"><label>Output Done?</label><select id="repOutput"><option value="y">Yes</option><option value="n">No</option></select></div>
+
+      <div class="fsectitle">Math</div>
+      <div class="fgroup"><label>Math Track + Details</label><input type="text" id="repMath" placeholder="35 min - Arithmetic Course Challenge"></div>
+
+      <div class="fsectitle">Physical</div>
+      <div class="fgroup"><label>Workout Completed + Numbers</label><textarea id="repWorkout" placeholder="Pushups: 30,14,13,12&#10;Squats: 25,15,12,10"></textarea></div>
+
+      <div class="fsectitle">Vitals</div>
+      <div class="frow">
+        <div class="fgroup"><label>Sleep Hours</label><input type="number" step="0.1" id="repSleep" placeholder="7.5"></div>
+        <div class="fgroup"><label>Energy (1-10)</label><input type="number" id="repEnergy" placeholder="7"></div>
+      </div>
+
+      <div class="fsectitle">Nutrition (optional)</div>
+      <div class="frow">
+        <div class="fgroup"><label>Breakfast</label><input type="text" id="repBreakfast" placeholder="Eggs, oats, avocado"></div>
+        <div class="fgroup"><label>Lunch</label><input type="text" id="repLunch" placeholder="—"></div>
+      </div>
+
+      <button class="genbtn" id="genReport">Generate Report</button>
+      <textarea class="genout" id="genOut" readonly placeholder="Your report will appear here — lanes are pulled in automatically."></textarea>
+      <button class="copybtn" id="copyReport">Copy to Clipboard</button>
+      <div class="copyok" id="copyOk">✓ Copied — paste into Gemini</div>
+    </section>
+  </div>
+
+  <!-- ============ PROTOCOLS TAB ============ -->
+  <div class="tabpanel" id="tab-protocols">
+    <section class="panel">
+      <div class="sec"><span class="dot" style="background:#ffd400;box-shadow:0 0 12px #ffd400"></span><h2>Rules & Protocols</h2></div>
+
+      <div class="pcard"><h3 style="color:#00e5ff;">Heat Rule</h3><p>Outdoor training strictly before 8:00am or after 8:00pm while Vegas highs exceed 100°F. No exceptions — heatstroke costs weeks, not minutes.</p></div>
+      <div class="pcard"><h3 style="color:#818cf8;">Physical Grid</h3><p>Morning calisthenics + nightly technical combat isolation are the daily non-negotiables. One Punch Man numbers are a target, not a day-one requirement — ramp ~10%/week from your tested baseline.</p></div>
+      <div class="pcard"><h3 style="color:#818cf8;">Cognitive Primaries</h3><p id="primariesText">Weeks 1–13: Spanish primary, math secondary (60–90 min/day). Weeks 14–25: Math primary, Spanish maintenance (60 min/day).</p></div>
+      <div class="pcard"><h3 style="color:#ff9f00;">Error Correction</h3><p>Missed a block? No guilt tax. Compress the next block to the highest-yield minimum and keep moving. The streak resets; the record doesn't.</p></div>
+
+      <details class="codexbox">
+        <summary class="codexsum">📖 Method of Loci — Quick Reference</summary>
+        <div class="codexbody">
+          <div class="codexrule"><b>1. Terms:</b> one place = a <b>locus</b>; many places = <b>loci</b>. Latin for "places."</div>
+          <div class="codexrule"><b>2. Go absurd:</b> normal images get deleted by the brain. Make each scene stylized, oversized, or funny — and give it texture, weight, smell.</div>
+          <div class="codexrule"><b>3. Long phrases:</b> for anything over ~10 words, anchor one core word in the palace and let your grammar reconstruct the rest live.</div>
+          <div class="codexrule"><b>4. Clear the dock:</b> the palace is temporary storage. Once Anki confirms long-term retention, let that scene dissolve and reuse the spot.</div>
+        </div>
+      </details>
+
+      <div class="pcard">
+        <h3 style="color:#39ff14;">Storage & Data Guard</h3>
+        <div class="storagebadge" id="storageBadge">— checking —</div>
+        <p style="margin-bottom:12px;">This console saves itself automatically, free either way. Inside Claude, it syncs to Claude's cloud. Hosted elsewhere (GitHub Pages, etc.), it saves to this browser only — use Export/Import to carry data to another device.</p>
+        <div class="datefield"><span style="font-family:var(--mono);font-size:11px;color:var(--muted);">DAY 1 =</span><input type="date" id="startDateInput"></div>
+        <button class="ghost" id="exportBtn" style="width:100%;margin-bottom:8px;">Export Progress Code</button>
+        <button class="ghost" id="importBtn" style="width:100%;">Import Backup Code</button>
+      </div>
+
+      <div class="foot">
+        <button class="ghost" id="sample">Load Sample Data</button>
+        <button class="ghost warn" id="reset">Reset to Baseline</button>
+      </div>
+    </section>
+  </div>
+
 </div>
 
 <script>
-  const STORAGE_KEY = "operator_run_state_v2";
-  
-  const tasks = [
-    "Wake Protocol (Immediate glass of water, no screen, immediate deployment to park)",
-    "Morning Calisthenics Session (Pushups → Squats → Plank → Lunges → Pullups x4 rounds)",
-    "CNS Lane (Ice-basin face immersion 10-15s x3 + Box Breathing x10 rounds)",
-    "Breakfast Block (Nutrition logging, protein/fat calibration)",
-    "Spanish Engine (Anki/AlgoApp card clearance, high review focus)",
-    "Spanish Structure (Language Transfer logical execution)",
-    "Spanish Ingestion (Dreaming Spanish input block)",
-    "Math Block (Khan Academy Arithmetic Velocity Sprint)",
-    "Memory Lane (10 loci Palace encoding using Method of Loci protocols)",
-    "Lunch Block (Adaptive nutrition tracking, recovery focus)",
-    "Drawing Lane (Drawabox Lesson 1 fundamental geometry drills, 25 mins)",
-    "NSDR / Siesta (Neurological memory consolidation tool, 20 mins)",
-    "Spanish Deep Input (Pure immersion audio/video processing block)",
-    "Flex / Life / Work Lane (Structural errands, heat management lockout)",
-    "Observation Lane (Kim's Game matrix analysis or crowd metrics)",
-    "Dinner Block (Refueling, operational validation check)",
-    "Nightly Combat Session (Shadowboxing technical isolation - Stance/Footwork focus)"
-  ];
+/* ============ STORAGE (hybrid: Claude cloud artifact storage, else localStorage) ============ */
+const USE_CLOUD = !!(typeof window!=='undefined' && window.storage && typeof window.storage.get==='function');
+const SKEY='operator_console_v2';
+async function storeGet(key){
+  try{
+    if(USE_CLOUD){ const r=await window.storage.get(key,false); return (r&&r.value)?JSON.parse(r.value):null; }
+    const v=localStorage.getItem(key); return v?JSON.parse(v):null;
+  }catch(e){ return null; }
+}
+async function storeSet(key,val){
+  try{
+    if(USE_CLOUD){ await window.storage.set(key, JSON.stringify(val), false); }
+    else{ localStorage.setItem(key, JSON.stringify(val)); }
+  }catch(e){ /* non-fatal */ }
+}
 
-  let appState = {
-    day: 1,
-    checkedTasks: {}
-  };
+/* ============ DATA ============ */
+const DOMAINS = [
+  { id:'combat', name:'Physical & Combat', short:'Combat', color:'#ff2e63', icon:'🥋',
+    skills:[['bjj','Brazilian Jiu-Jitsu'],['box','Boxing'],['mt','Muay Thai / Kickboxing'],
+            ['kar','Karate & Taekwondo'],['wre','Wrestling'],['sc','Strength & Conditioning']] },
+  { id:'lang', name:'Languages', short:'Language', color:'#00e5ff', icon:'🗣️',
+    skills:[['spa','Spanish'],['man','Mandarin Chinese']] },
+  { id:'stem', name:'Quantitative & Technical', short:'STEM', color:'#9d4edd', icon:'📐',
+    skills:[['mat','Mathematics'],['cs','CS & Programming'],['eng','Engineering']] },
+  { id:'body', name:'Body Science', short:'Body Sci', color:'#39ff14', icon:'🧬',
+    skills:[['ana','Anatomy & Physiology']] },
+  { id:'arts', name:'Arts & Making', short:'Arts', color:'#ff8c00', icon:'🎨',
+    skills:[['draw','Drawing & Observation'],['arch','Architecture & Design']] },
+  { id:'mind', name:'Mind', short:'Mind', color:'#ffd400', icon:'🧠',
+    skills:[['learn','Accelerated Learning'],['mem','Memory Systems'],
+            ['obs','Observation & Deduction'],['focus','Focus & Attention'],['cnsr','CNS Regulation']] },
+  { id:'long', name:'Longevity', short:'Longevity', color:'#ff4fd8', icon:'⚡',
+    skills:[['nut','Nutrition'],['sleep','Sleep'],['skin','Skincare & Grooming'],['supp','Supplementation']] },
+];
+const PHASES = [
+  ['P1','Mo 0–6','Foundations + Spanish','Lock the daily lanes. Build a BJJ + striking base. Spanish is the primary cognitive focus.'],
+  ['P2','Mo 6–18','Mathematics','Foundations → calculus. Combat skill-building continues. Spanish drops to conversational upkeep.'],
+  ['P3','Yr 2–3','Programming + Mandarin','CS fluency. Begin Mandarin. Combat to competition-ready intermediate. Add anatomy.'],
+  ['P4','Yr 3–4','Engineering · Anatomy · Design','STEM depth, body science, architecture, and drawing pushed to advanced-intermediate.'],
+  ['P5','Yr 4–5','Integration → Proficiency','Consolidate everything. Drive priority domains onto a proficiency / mastery trajectory.'],
+];
+const SAMPLE = {bjj:45,box:40,mt:35,kar:30,wre:50,sc:60,spa:65,man:15,mat:55,cs:35,eng:20,
+  ana:40,draw:45,arch:25,learn:50,mem:45,obs:35,focus:55,cnsr:40,nut:60,sleep:65,skin:45,supp:30};
 
-  function init() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        appState = JSON.parse(saved);
-        if (!appState.checkedTasks) appState.checkedTasks = {};
-      } catch (e) {
-        console.error("State parse failed", e);
-      }
-    }
-    renderChecklist();
-    updateHeader();
-    
-    document.getElementById('dayInput').addEventListener('input', (e) => {
-      let val = parseInt(e.target.value) || 1;
-      if (val < 1) val = 1;
-      if (val > 175) val = 175;
-      appState.day = val;
-      saveState();
-      updateHeader();
+const SCHEDULE = [
+  ['b1','05:30','Wake + Hydrate','Water immediately. No screens.'],
+  ['b2','05:45','Meditation','20 min seated, breath-anchored stillness — settle the system before the day starts.'],
+  ['b3','06:05','Morning Calisthenics','Circuit x4: pushups then squats then plank then lunges then pull-ups. Ramp +10%/week.'],
+  ['b4','06:50','CNS Lane','Cold shower 60-90s (or ice-water face dunks x3) + box breathing 4-4-4-4 x10.'],
+  ['b5','07:00','Breakfast','Protein-forward real food.'],
+  ['b6','07:45','Spanish Engine','Anki/AlgoApp 15-20 cards, binary grading, shadow aloud 3-5x.'],
+  ['b7','08:05','Spanish Structure','Language Transfer - 2 episodes, answer aloud before the audio does.'],
+  ['b8','08:30','Spanish Ingestion','Dreaming Spanish - no translating, map sound to meaning.'],
+  ['b9','09:05','Spanish Output','Narrate your morning aloud + write 5 sentences.'],
+  ['b10','09:35','Math Block','Khan Academy - course challenge / mastery, interleaved.'],
+  ['b11','11:05','Memory Lane','Palace encoding - 10 loci, absurd imagery, walk it twice.'],
+  ['b12','11:25','Lunch','Real food, log it.'],
+  ['b13','12:10','Drawing Lane','Drawabox - lines, ellipses, form fundamentals.'],
+  ['b14','12:35','NSDR / Siesta','20 min non-sleep deep rest - locks in the morning.'],
+  ['b15','13:05','Spanish Deep Input','Podcast or long-form video immersion.'],
+  ['b16','14:35','Flex / Life / Work','Heat lockout window - errands, VLA/SDL, rest.'],
+  ['b17','17:00','Observation Lane','Kim\'s game + baseline/deviation reads.'],
+  ['b18','17:30','Dinner + Flex','Refuel, process the day.'],
+  ['b19','19:45','Nightly Combat','Shadowboxing - 6x3min rounds, 1min rest, technical focus.'],
+  ['b20','20:25','Log + Report','Tick lanes/schedule, generate report, paste to Gemini.'],
+  ['b21','20:45','Wind Down','Screens dim, no training content.'],
+  ['b22','22:00','Lights Out','7.5-9 hrs - non-negotiable training input.'],
+];
+
+const TARGETS_SPANISH=[
+  ['t1','Spanish — 14+ hrs this week'],['t2','5 training sessions logged'],
+  ['t3','6 drawing blocks (25 min)'],['t4','6 memory / observation drills'],
+  ['t5','Sleep 7.5+ hrs average'],['t6','iTalki / speaking session'],
+  ['t7','6 CNS/breathwork sessions'],
+];
+const TARGETS_MATH=[
+  ['t1','Math — 10+ hrs this week'],['t2','Spanish maintenance — 7+ hrs'],
+  ['t3','5 training sessions logged'],['t4','6 drawing blocks (25 min)'],
+  ['t5','6 memory / observation drills'],['t6','Sleep 7.5+ hrs average'],
+  ['t7','6 CNS/breathwork sessions'],
+];
+
+/* ============ STATE ============ */
+const ALL_SKILLS = DOMAINS.flatMap(d=>d.skills.map(s=>s[0]));
+function blankSkills(){ const o={}; ALL_SKILLS.forEach(id=>o[id]=0); o.spa=25; return o; }
+let state = {
+  skills:blankSkills(), lanes:{train:false,mem:false,draw:false,cns:false}, streak:0, lastLog:null,
+  missionPhase:1, opsChecks:{}, lastOpsWeek:null, scheduleChecks:{}, scheduleDate:null,
+  startDate:null, reporterDraft:{}
+};
+async function loadState(){
+  const saved = await storeGet(SKEY);
+  if(saved && typeof saved==='object'){
+    if(saved.skills) ALL_SKILLS.forEach(id=>{ if(typeof saved.skills[id]==='number') state.skills[id]=saved.skills[id]; });
+    if(saved.lanes) ['train','mem','draw','cns'].forEach(k=>{ if(typeof saved.lanes[k]==='boolean') state.lanes[k]=saved.lanes[k]; });
+    if(typeof saved.streak==='number') state.streak=saved.streak;
+    if(typeof saved.lastLog==='string'||saved.lastLog===null) state.lastLog=saved.lastLog;
+    if(typeof saved.missionPhase==='number') state.missionPhase=saved.missionPhase;
+    if(saved.opsChecks && typeof saved.opsChecks==='object') state.opsChecks=saved.opsChecks;
+    if(typeof saved.lastOpsWeek==='number'||saved.lastOpsWeek===null) state.lastOpsWeek=saved.lastOpsWeek;
+    if(saved.scheduleChecks && typeof saved.scheduleChecks==='object') state.scheduleChecks=saved.scheduleChecks;
+    if(typeof saved.scheduleDate==='string'||saved.scheduleDate===null) state.scheduleDate=saved.scheduleDate;
+    if(typeof saved.startDate==='string') state.startDate=saved.startDate;
+    if(saved.reporterDraft && typeof saved.reporterDraft==='object') state.reporterDraft=saved.reporterDraft;
+  }
+}
+async function save(){ await storeSet(SKEY, state); }
+
+/* ============ DATE / SPRINT LOGIC ============ */
+function todayStr(d){ d=d||new Date(); return d.toISOString().slice(0,10); }
+function dayBefore(str){ const d=new Date(str+'T00:00:00'); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
+function computeDayNum(){
+  const start=new Date(state.startDate+'T00:00:00');
+  const now=new Date(); now.setHours(0,0,0,0);
+  const diff=Math.floor((now-start)/86400000)+1;
+  return Math.max(1, Math.min(175, diff));
+}
+function computeWeek(dayNum){ return Math.min(25, Math.ceil(dayNum/7)); }
+function sprintPhaseName(week){ return week<=13 ? 'Spanish' : 'Math'; }
+
+/* ============ HELPERS ============ */
+function lvlLabel(p){
+  if(p<15) return 'Novice'; if(p<35) return 'Beginner'; if(p<55) return 'Competent';
+  if(p<75) return 'Proficient'; if(p<92) return 'Advanced'; return 'Mastery';
+}
+function domainAvg(d){ const v=d.skills.map(s=>state.skills[s[0]]); return v.reduce((a,b)=>a+b,0)/v.length; }
+function overallPct(){ const v=ALL_SKILLS.map(id=>state.skills[id]); return v.reduce((a,b)=>a+b,0)/v.length; }
+function darken(hex,f){ const n=parseInt(hex.replace('#',''),16); let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+  return 'rgb('+Math.round(r*f)+','+Math.round(g*f)+','+Math.round(b*f)+')'; }
+function extrude(hex){ const d=darken(hex,.42); let s=[]; for(let i=1;i<=6;i++) s.push(i+'px '+(-i)+'px 0 '+d); s.push('0 0 22px '+hex); return s.join(','); }
+
+/* ============ TAB SWITCHING ============ */
+document.querySelectorAll('.tabbtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tabbtn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ============ BUILD: DOMAINS ============ */
+function buildDomains(){
+  const root=document.getElementById('domains'); root.innerHTML='';
+  DOMAINS.forEach(d=>{
+    const card=document.createElement('div'); card.className='dcard'; card.style.setProperty('--c',d.color);
+    let skillsHtml='';
+    d.skills.forEach(s=>{
+      const id=s[0];
+      skillsHtml+='<div class="skill"><div class="srow"><span class="sname">'+s[1]+'</span>'+
+        '<button class="step" data-skill="'+id+'" data-dir="-1" aria-label="decrease">−</button>'+
+        '<span class="sval" id="val-'+id+'">0</span>'+
+        '<button class="step" data-skill="'+id+'" data-dir="1" aria-label="increase">+</button></div>'+
+        '<div class="track"><div class="fill" id="fill-'+id+'"></div></div></div>';
     });
-  }
-
-  function saveState() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-  }
-
-  function updateHeader() {
-    const day = appState.day;
-    const week = Math.ceil(day / 7);
-    document.getElementById('dayInput').value = day;
-    document.getElementById('weekVal').textContent = week;
-    
-    const isSpanishPrimary = week <= 13;
-    document.getElementById('phaseVal').textContent = isSpanishPrimary ? "Spanish Prim." : "Math Prim.";
-    document.getElementById('phaseVal').style.color = isSpanishPrimary ? "#818cf8" : "#00ffaa";
-
-    const isDeload = week % 4 === 0;
-    document.getElementById('deloadBanner').style.display = isDeload ? "block" : "none";
-  }
-
-  function renderChecklist() {
-    const container = document.getElementById('taskList');
-    container.innerHTML = "";
-    
-    tasks.forEach((task, idx) => {
-      const isChecked = !!appState.checkedTasks[idx];
-      const card = document.createElement('div');
-      card.className = `task-card ${isChecked ? 'completed' : ''}`;
-      
-      card.innerHTML = `
-        <input type="checkbox" class="task-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleTask(${idx}, this)">
-        <div class="task-info">
-          <div class="task-title">${task.split(' (')[0]}</div>
-          <div class="task-desc">${task.includes('(') ? task.substring(task.indexOf('(')) : ''}</div>
-        </div>
-      `;
-      container.appendChild(card);
+    card.innerHTML='<div class="dhead"><span class="ic">'+d.icon+'</span><span class="nm">'+d.name+'</span>'+
+      '<span class="pct"><span id="dpct-'+d.id+'">0</span>%<small id="dlvl-'+d.id+'">Novice</small></span></div>'+skillsHtml;
+    root.appendChild(card);
+  });
+  root.querySelectorAll('.step').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const id=btn.dataset.skill, dir=+btn.dataset.dir;
+      state.skills[id]=Math.max(0,Math.min(100, state.skills[id]+dir*5));
+      renderAll(); save();
     });
-  }
+  });
+}
+function buildSky(){
+  const sky=document.getElementById('sky'); sky.innerHTML='';
+  DOMAINS.forEach(d=>{
+    const w=document.createElement('div'); w.className='colwrap';
+    w.innerHTML='<div class="cv" id="cv-'+d.id+'">0</div><div class="col" id="col-'+d.id+'" style="--c:'+d.color+'"></div><div class="cn">'+d.short+'</div>';
+    sky.appendChild(w);
+  });
+}
+function buildPhases(){
+  const root=document.getElementById('phases'); root.innerHTML='';
+  PHASES.forEach((p,i)=>{
+    const el=document.createElement('div'); el.className='phase'; el.dataset.idx=i+1;
+    el.innerHTML='<div class="pn"><span>'+p[0]+'</span><span>'+p[1]+'</span></div><div class="pt">'+p[2]+'</div><div class="pd">'+p[3]+'</div>';
+    el.addEventListener('click',()=>{ state.missionPhase=i+1; renderPhases(); save(); });
+    root.appendChild(el);
+  });
+}
 
-  function toggleTask(idx, el) {
-    appState.checkedTasks[idx] = el.checked;
-    el.closest('.task-card').classList.toggle('completed', el.checked);
-    saveState();
-  }
+/* ============ RADAR ============ */
+const R_CX=220,R_CY=196,R_R=120,R_N=DOMAINS.length;
+function radarVertex(i,v){ const a=-Math.PI/2 + i*2*Math.PI/R_N; return [R_CX+R_R*v*Math.cos(a), R_CY+R_R*v*Math.sin(a)]; }
+function buildRadar(){
+  const svg=document.getElementById('radar'); let h='';
+  h+='<defs><radialGradient id="rf" cx="50%" cy="50%" r="65%"><stop offset="0%" stop-color="rgba(0,229,255,.45)"/><stop offset="60%" stop-color="rgba(157,78,221,.32)"/><stop offset="100%" stop-color="rgba(255,46,99,.2)"/></radialGradient></defs>';
+  [0.2,0.4,0.6,0.8,1.0].forEach(L=>{
+    const pts=DOMAINS.map((_,i)=>radarVertex(i,L).map(n=>n.toFixed(1)).join(',')).join(' ');
+    h+='<polygon points="'+pts+'" fill="none" stroke="rgba(140,160,255,.18)" stroke-width="1"/>';
+  });
+  DOMAINS.forEach((d,i)=>{
+    const exy=radarVertex(i,1);
+    h+='<line x1="'+R_CX+'" y1="'+R_CY+'" x2="'+exy[0].toFixed(1)+'" y2="'+exy[1].toFixed(1)+'" stroke="rgba(140,160,255,.2)" stroke-width="1"/>';
+    const lp=radarVertex(i,1.2); const ux=Math.cos(-Math.PI/2+i*2*Math.PI/R_N);
+    let anchor = ux<-0.3?'end':(ux>0.3?'start':'middle');
+    h+='<text x="'+lp[0].toFixed(1)+'" y="'+lp[1].toFixed(1)+'" class="axis-label" text-anchor="'+anchor+'" dominant-baseline="middle">'+d.short+'</text>';
+  });
+  h+='<polygon id="radarData" points="" fill="url(#rf)" stroke="#fff" stroke-width="1.5" style="filter:drop-shadow(0 0 10px rgba(0,229,255,.6));"/><g id="radarDots"></g>';
+  svg.innerHTML=h;
+}
+function updateRadar(){
+  const poly=document.getElementById('radarData');
+  const pts=DOMAINS.map((d,i)=>radarVertex(i, domainAvg(d)/100).map(n=>n.toFixed(1)).join(',')).join(' ');
+  poly.setAttribute('points',pts);
+  let dots='';
+  DOMAINS.forEach((d,i)=>{ const xy=radarVertex(i,domainAvg(d)/100);
+    dots+='<circle cx="'+xy[0].toFixed(1)+'" cy="'+xy[1].toFixed(1)+'" r="3.5" fill="'+d.color+'" stroke="#fff" stroke-width="1"/>'; });
+  document.getElementById('radarDots').innerHTML=dots;
+}
 
-  function switchTab(tabId) {
-    document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    
-    document.getElementById(tabId).classList.add('active');
-    event.currentTarget.classList.add('active');
-  }
+/* ============ BUILD: SCHEDULE ============ */
+function buildSchedule(){
+  const root=document.getElementById('schedList'); root.innerHTML='';
+  SCHEDULE.forEach(item=>{
+    const el=document.createElement('div'); el.className='sched-item'; el.dataset.b=item[0];
+    el.innerHTML='<div class="st-time">'+item[1]+'</div><div class="st-title">'+item[2]+'</div><div class="st-desc">'+item[3]+'</div>';
+    el.addEventListener('click',()=>{ state.scheduleChecks[item[0]]=!state.scheduleChecks[item[0]]; renderSchedule(); save(); });
+    root.appendChild(el);
+  });
+}
+function renderSchedule(){
+  let done=0;
+  document.querySelectorAll('.sched-item').forEach(el=>{
+    const on=!!state.scheduleChecks[el.dataset.b];
+    el.classList.toggle('done', on);
+    if(on) done++;
+  });
+  document.getElementById('schedProgress').textContent=done+' / '+SCHEDULE.length+' blocks';
+}
 
-  function generateAndCopyReport() {
-    const day = appState.day;
-    const week = Math.ceil(day / 7);
-    
-    const anki = document.getElementById('repAnki').value || "0";
-    const sInput = document.getElementById('repSInput').value || "0";
-    const sOutput = document.getElementById('repSOutput').value;
-    
-    const mathTime = document.getElementById('repMathTime').value || "None";
-    const mathMastery = document.getElementById('repMathMastery').value || "0";
-    const mathVelocity = document.getElementById('repMathVelocity').value || "0";
-    
-    const breakfast = document.getElementById('repBreakfast').value || "Not logged / Skipped";
-    const lunch = document.getElementById('repLunch').value || "Not logged / Skipped";
-    
-    const workout = document.getElementById('repWorkout').value || "None";
-    const lanes = document.getElementById('repLanes').value || "None";
-    const sleep = document.getElementById('repSleep').value || "Not logged";
-    const energy = document.getElementById('repEnergy').value || "Not logged";
+/* ============ BUILD: WEEKLY TARGETS ============ */
+function buildTargets(){
+  const week=computeWeek(computeDayNum());
+  const list = sprintPhaseName(week)==='Spanish' ? TARGETS_SPANISH : TARGETS_MATH;
+  const root=document.getElementById('targets'); root.innerHTML='';
+  list.forEach(t=>{
+    const el=document.createElement('div'); el.className='tgt'; el.dataset.t=t[0];
+    el.innerHTML='<div class="chk">✓</div><span>'+t[1]+'</span>';
+    el.addEventListener('click',()=>{ state.opsChecks[t[0]]=!state.opsChecks[t[0]]; renderTargets(); save(); });
+    root.appendChild(el);
+  });
+}
+function renderTargets(){
+  document.querySelectorAll('.tgt').forEach(el=>{ el.classList.toggle('on', !!state.opsChecks[el.dataset.t]); });
+}
 
-    const reportMarkdown = `Anki cards done: ${anki}
-Spanish input minutes: ${sInput}
-Output done: ${sOutput === 'Yes' ? 'y' : 'n'}
-Math track + details: ${mathTime}
-Math Course Mastery: ${mathMastery}%
-Math Skills Mastered: ${mathVelocity}
-Breakfast log: ${breakfast}
-Lunch log: ${lunch}
-Workout completed + numbers:
-${workout}
-Lanes ticked: ${lanes}
-Sleep hours: ${sleep}
-Energy: ${energy}`;
+/* ============ RENDER: HEADER / OVERALL ============ */
+function renderHeader(){
+  const day=computeDayNum(); const week=computeWeek(day); const sp=sprintPhaseName(week);
+  document.getElementById('dayNum').textContent=day;
+  document.getElementById('weekNumHead').textContent=week;
+  document.getElementById('sprintPhaseHead').textContent=sp;
+  document.getElementById('weekNum').textContent=week;
+  document.getElementById('sprintPhaseBody').textContent=sp;
+  document.getElementById('deloadBanner').style.display = (week%4===0) ? 'block' : 'none';
+  document.getElementById('primariesText').textContent = sp==='Spanish'
+    ? 'Weeks 1–13 (current: Week '+week+'): Spanish primary, math secondary (60–90 min/day).'
+    : 'Weeks 14–25 (current: Week '+week+'): Math primary, Spanish maintenance (60 min/day).';
 
-    navigator.clipboard.writeText(reportMarkdown).then(() => {
-      const alertBox = document.getElementById('copyAlert');
-      alertBox.style.display = 'block';
-      setTimeout(() => alertBox.style.display = 'none', 3000);
-    }).catch(err => {
-      alert("Failed to copy automatically. Copy this markdown block:\n\n" + reportMarkdown);
+  const p=overallPct();
+  const c=2*Math.PI*25, off=c*(1-p/100);
+  const donut=document.getElementById('donut');
+  donut.setAttribute('stroke-dasharray',c.toFixed(1));
+  donut.setAttribute('stroke-dashoffset',off.toFixed(1));
+  document.getElementById('donutTxt').textContent=Math.round(p)+'%';
+}
+function renderDomains(){
+  DOMAINS.forEach(d=>{
+    const avg=domainAvg(d);
+    document.getElementById('dpct-'+d.id).textContent=Math.round(avg);
+    document.getElementById('dlvl-'+d.id).textContent=lvlLabel(avg);
+    d.skills.forEach(s=>{ const id=s[0];
+      document.getElementById('val-'+id).textContent=state.skills[id];
+      document.getElementById('fill-'+id).style.width=state.skills[id]+'%';
     });
-  }
+  });
+}
+function renderSky(){
+  DOMAINS.forEach(d=>{ const avg=domainAvg(d);
+    const col=document.getElementById('col-'+d.id);
+    col.style.height=(8+(avg/100)*150)+'px';
+    col.style.boxShadow=extrude(d.color);
+    document.getElementById('cv-'+d.id).textContent=Math.round(avg);
+  });
+}
+function renderPhases(){
+  document.querySelectorAll('.phase').forEach(el=>{ el.classList.toggle('active', +el.dataset.idx===state.missionPhase); });
+}
+function renderLanes(){
+  document.querySelectorAll('.lane').forEach(el=>{ el.classList.toggle('on', !!state.lanes[el.dataset.lane]); });
+  document.getElementById('streakNum').textContent=state.streak;
+}
+function renderAll(){
+  renderHeader(); updateRadar(); renderDomains(); renderSky(); renderPhases(); renderLanes(); renderTargets(); renderSchedule();
+}
 
-  function exportData() {
-    const rawData = localStorage.getItem(STORAGE_KEY);
-    if (!rawData) {
-      alert("No active data found to backup yet.");
-      return;
-    }
-    const encodedData = btoa(unescape(encodeURIComponent(rawData)));
-    navigator.clipboard.writeText(encodedData).then(() => {
-      const alertBox = document.getElementById('backupAlert');
-      alertBox.textContent = "Backup code copied!";
-      alertBox.style.display = 'block';
-      setTimeout(() => alertBox.style.display = 'none', 3000);
-    }).catch(err => {
-      prompt("Copy your backup code manually:", encodedData);
-    });
-  }
+/* ============ LANE + STREAK LOGIC ============ */
+document.addEventListener('click',e=>{
+  const lane=e.target.closest('.lane');
+  if(lane){ const k=lane.dataset.lane; state.lanes[k]=!state.lanes[k]; renderLanes(); save(); }
+});
+document.getElementById('logDay').addEventListener('click',()=>{
+  const msg=document.getElementById('logMsg');
+  const all=state.lanes.train&&state.lanes.mem&&state.lanes.draw&&state.lanes.cns;
+  if(!all){ msg.textContent='✗ Check all four lanes first.'; msg.style.color='#ff2e63'; return; }
+  const t=todayStr();
+  if(state.lastLog===t){ msg.textContent='✓ Already logged today — see you tomorrow.'; msg.style.color='#39ff14'; return; }
+  state.streak = (state.lastLog===dayBefore(t)) ? state.streak+1 : 1;
+  state.lastLog=t; state.lanes={train:false,mem:false,draw:false,cns:false};
+  msg.textContent='✓ Day logged. Streak now '+state.streak+'.'; msg.style.color='#39ff14';
+  renderLanes(); save();
+});
 
-  function importData() {
-    const inputCode = prompt("Paste your secure Backup Code here:");
-    if (!inputCode) return;
-    try {
-      const decodedJSON = decodeURIComponent(escape(atob(inputCode.trim())));
-      const parsedState = JSON.parse(decodedJSON);
-      if (parsedState && typeof parsedState === "object") {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(parsedState));
-        alert("System data restored successfully! Rebuilding layout...");
-        window.location.reload();
-      } else {
-        alert("Invalid format code tracking error.");
-      }
-    } catch (e) {
-      alert("Failed to decode tracking string. Ensure complete block was copied.");
-    }
-  }
+/* ============ REPORTER ============ */
+const REP_FIELDS=['repAnki','repInput','repOutput','repMath','repWorkout','repSleep','repEnergy','repBreakfast','repLunch'];
+function wireReporterPersist(){
+  REP_FIELDS.forEach(id=>{
+    const el=document.getElementById(id);
+    if(state.reporterDraft[id]!==undefined) el.value=state.reporterDraft[id];
+    el.addEventListener('input',()=>{ state.reporterDraft[id]=el.value; save(); });
+  });
+}
+function laneString(){
+  const map=[['train','Physical'],['mem','Memory'],['draw','Drawing'],['cns','CNS']];
+  const on=map.filter(m=>state.lanes[m[0]]).map(m=>m[1]);
+  return on.length ? on.join(' ') : 'None';
+}
+document.getElementById('genReport').addEventListener('click',()=>{
+  const day=computeDayNum(), week=computeWeek(day), sp=sprintPhaseName(week);
+  const anki=document.getElementById('repAnki').value||'0';
+  const input=document.getElementById('repInput').value||'0';
+  const output=document.getElementById('repOutput').value==='y'?'y':'n';
+  const math=document.getElementById('repMath').value||'None';
+  const workout=document.getElementById('repWorkout').value||'None';
+  const sleep=document.getElementById('repSleep').value||'Not logged';
+  const energy=document.getElementById('repEnergy').value||'Not logged';
+  const bf=document.getElementById('repBreakfast').value;
+  const ln=document.getElementById('repLunch').value;
 
-  window.onload = init;
+  let out='[Console: Day '+day+' / Week '+week+' / '+sp+' Primary]\n';
+  out+='Anki cards done: '+anki+'\n';
+  out+='Spanish input minutes: '+input+'\n';
+  out+='Output done: '+output+'\n';
+  out+='Math track + details: '+math+'\n';
+  out+='Workout completed + numbers:\n'+workout+'\n';
+  out+='Lanes ticked: '+laneString()+'\n';
+  out+='Sleep hours: '+sleep+'\n';
+  out+='Energy: '+energy;
+  if(bf) out+='\nBreakfast: '+bf;
+  if(ln) out+='\nLunch: '+ln;
+
+  document.getElementById('genOut').value=out;
+});
+document.getElementById('copyReport').addEventListener('click',()=>{
+  const ta=document.getElementById('genOut');
+  ta.select();
+  const ok=document.getElementById('copyOk');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(ta.value).then(()=>{ ok.style.display='block'; setTimeout(()=>ok.style.display='none',2500); }).catch(()=>{});
+  }
+});
+
+/* ============ START DATE / SCHEDULE-DATE ROLLOVER ============ */
+async function ensureStartDate(){
+  if(!state.startDate){ state.startDate=todayStr(); await save(); }
+  document.getElementById('startDateInput').value=state.startDate;
+}
+document.getElementById('startDateInput').addEventListener('change',e=>{
+  if(e.target.value){ state.startDate=e.target.value; renderAll(); save(); }
+});
+function rolloverIfNeeded(){
+  const t=todayStr();
+  if(state.scheduleDate!==t){ state.scheduleChecks={}; state.scheduleDate=t; }
+  const week=computeWeek(computeDayNum());
+  if(state.lastOpsWeek!==week){ state.opsChecks={}; state.lastOpsWeek=week; }
+}
+
+/* ============ DATA GUARD ============ */
+document.getElementById('exportBtn').addEventListener('click',async ()=>{
+  const raw=JSON.stringify(state);
+  const encoded=btoa(unescape(encodeURIComponent(raw)));
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    try{ await navigator.clipboard.writeText(encoded); alert('Backup code copied to clipboard.'); }
+    catch(e){ prompt('Copy your backup code:', encoded); }
+  } else { prompt('Copy your backup code:', encoded); }
+});
+document.getElementById('importBtn').addEventListener('click',()=>{
+  const code=prompt('Paste your backup code:');
+  if(!code) return;
+  try{
+    const decoded=decodeURIComponent(escape(atob(code.trim())));
+    const parsed=JSON.parse(decoded);
+    if(parsed && typeof parsed==='object'){
+      Object.assign(state, parsed);
+      save().then(()=>{ alert('Restored. Reloading view.'); location.reload(); });
+    } else { alert('Invalid code.'); }
+  }catch(e){ alert('Could not decode that code — make sure it was copied in full.'); }
+});
+
+/* ============ FOOTER CONTROLS ============ */
+document.getElementById('sample').addEventListener('click',()=>{
+  ALL_SKILLS.forEach(id=>{ state.skills[id]= (id in SAMPLE)?SAMPLE[id]:0; });
+  renderAll(); save();
+});
+document.getElementById('reset').addEventListener('click',()=>{
+  if(confirm('Reset every skill to baseline? Streak, lanes, and schedule are kept.')){ state.skills=blankSkills(); renderAll(); save(); }
+});
+
+/* ============ INIT ============ */
+async function init(){
+  buildDomains(); buildSky(); buildPhases(); buildRadar(); buildSchedule(); buildTargets();
+  await loadState();
+  await ensureStartDate();
+  rolloverIfNeeded();
+  buildTargets();
+  wireReporterPersist();
+  document.getElementById('storageBadge').textContent = USE_CLOUD ? '\u2601 Claude Cloud — auto-sync' : '\ud83d\udcbe Local Browser — use Export/Import to sync devices';
+  renderAll();
+  await save();
+}
+init();
 </script>
-
 </body>
 </html>
