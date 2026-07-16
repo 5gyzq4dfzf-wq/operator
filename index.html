@@ -298,7 +298,7 @@
         <div class="streak"><div class="sd" style="text-align:right"><b id="streakNum">0</b><br><span>Day Streak</span></div><span class="flame">🔥</span></div>
       </div>
       <button class="logbtn" id="logDay">Complete Today &nbsp;✓</button>
-      <div class="logmsg" id="logMsg">Check all four lanes, then log the day to build your streak.</div>
+      <div class="logmsg" id="logMsg">Hit 3 of 4 lanes, then log the day to keep your streak alive.</div>
     </section>
 
     <section class="panel">
@@ -469,13 +469,13 @@ const SCHEDULE = [
 const TARGETS_SPANISH=[
   ['t1','Spanish — 14+ hrs this week'],['t2','5 training sessions logged'],
   ['t3','6 drawing blocks (25 min)'],['t4','6 memory / observation drills'],
-  ['t5','Sleep 7.5+ hrs average'],['t6','iTalki / speaking session'],
+  ['t5','Sleep 7+ hrs — TOP PRIORITY'],['t6','3+ speaking / convo sessions (free)'],
   ['t7','6 CNS/breathwork sessions'],
 ];
 const TARGETS_MATH=[
   ['t1','Math — 10+ hrs this week'],['t2','Spanish maintenance — 7+ hrs'],
   ['t3','5 training sessions logged'],['t4','6 drawing blocks (25 min)'],
-  ['t5','6 memory / observation drills'],['t6','Sleep 7.5+ hrs average'],
+  ['t5','6 memory / observation drills'],['t6','Sleep 7+ hrs — TOP PRIORITY'],
   ['t7','6 CNS/breathwork sessions'],
 ];
 
@@ -506,8 +506,9 @@ async function loadState(){
 async function save(){ await storeSet(SKEY, state); }
 
 /* ============ DATE / SPRINT LOGIC ============ */
-function todayStr(d){ d=d||new Date(); return d.toISOString().slice(0,10); }
-function dayBefore(str){ const d=new Date(str+'T00:00:00'); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
+function fmtLocal(d){ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return y+'-'+m+'-'+dd; }
+function todayStr(d){ return fmtLocal(d||new Date()); }
+function dayBefore(str){ const d=new Date(str+'T00:00:00'); d.setDate(d.getDate()-1); return fmtLocal(d); }
 function computeDayNum(){
   const start=new Date(state.startDate+'T00:00:00');
   const now=new Date(); now.setHours(0,0,0,0);
@@ -705,8 +706,8 @@ document.addEventListener('click',e=>{
 });
 document.getElementById('logDay').addEventListener('click',()=>{
   const msg=document.getElementById('logMsg');
-  const all=state.lanes.train&&state.lanes.mem&&state.lanes.draw&&state.lanes.cns;
-  if(!all){ msg.textContent='✗ Check all four lanes first.'; msg.style.color='#ff2e63'; return; }
+  const laneCount=(state.lanes.train?1:0)+(state.lanes.mem?1:0)+(state.lanes.draw?1:0)+(state.lanes.cns?1:0);
+  if(laneCount<3){ msg.textContent='✗ Hit at least 3 of 4 lanes to log the day.'; msg.style.color='#ff2e63'; return; }
   const t=todayStr();
   if(state.lastLog===t){ msg.textContent='✓ Already logged today — see you tomorrow.'; msg.style.color='#39ff14'; return; }
   state.streak = (state.lastLog===dayBefore(t)) ? state.streak+1 : 1;
